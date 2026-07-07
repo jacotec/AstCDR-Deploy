@@ -1,0 +1,67 @@
+# AstCDR — PRODUCTION compose (prebuilt images, no build).
+# For deployment to other installations: images are pulled from the (public)
+# registry, NO sources are required.
+#
+# Quick start:
+#   cp .env.example .env                 # fill in (secrets)
+#   cp config.example.yaml config.yaml   # adapt to your own FreePBX
+#   docker compose up -d
+#
+# Pin the image version via .env (CDRJ_IMAGE), otherwise the default below applies.
+services:
+  cdrj-postgres:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: cdrjournal
+      POSTGRES_USER: cdrjournal
+      POSTGRES_PASSWORD: ${CACHE_DB_PASSWORD}
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    networks: [internal]
+    # Deliberately NO ports: — Postgres stays inside the compose network.
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U cdrjournal -d cdrjournal"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  cdrj-web:
+    image: ${CDRJ_IMAGE:-git.jacotec.de/jacotec/astcdr:1.0.0}
+    restart: unless-stopped
+    command: ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8080", "--proxy-headers"]
+    env_file: [.env]
+    volumes:
+      - ./config.yaml:/app/config.yaml:ro
+    depends_on:
+      cdrj-postgres:
+        condition: service_healthy
+    # Host port via .env (default 3000), bind 0.0.0.0 -> the TLS reverse proxy
+    # (HAProxy/nginx/Traefik) talks to this port. Inside the container it stays 8080.
+    ports:
+      - "${WEB_PORT:-3000}:8080"
+    networks: [internal]
+
+  cdrj-ingest:
+    image: ${CDRJ_IMAGE:-git.jacotec.de/jacotec/astcdr:1.0.0}
+    restart: unless-stopped
+    command: ["python", "-m", "app.ingest.worker"]
+    env_file: [.env]
+    volumes:
+      - ./config.yaml:/app/config.yaml:ro
+      # FreePBX MariaDB socket (same host). Adjust the path if needed; only
+      # required when source_db.socket is set in config.yaml.
+      - /var/run/mysqld/mysqld.sock:/var/run/mysqld/mysqld.sock
+    depends_on:
+      cdrj-postgres:
+        condition: service_healthy
+    # Fallback for TCP access if host:port is used instead of the socket.
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    networks: [internal]
+
+volumes:
+  pgdata: {}
+
+networks:
+  internal: {}

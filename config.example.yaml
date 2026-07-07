@@ -1,0 +1,90 @@
+# AstCDR — example configuration.
+# The real config.yaml is gitignored; secrets come via ${ENV} from .env.
+app:
+  base_url: "https://cdr.example.com"   # REQUIRED: public URL (OIDC callback!)
+  secret_key: "${APP_SECRET_KEY}"       # session signature
+  timezone: "Europe/Berlin"
+  session_lifetime_minutes: 0           # 0 = no timeout (until logout/browser close); >0 = auto-logout after minutes
+  # cookie_secure: false                # ONLY for direct HTTP testing (without TLS proxy);
+                                         # omit -> Secure is automatic for an https base_url
+
+source_db:                              # FreePBX asteriskcdrdb — READ ONLY
+  # On the same host as FreePBX? Then use the local socket (robust, no network needed):
+  # socket: "/var/run/mysqld/mysqld.sock"
+  host: "10.0.0.5"                      # otherwise the PBX LAN IP (mind bind-address/firewall!)
+  port: 3306
+  name: "asteriskcdrdb"
+  user: "cdrjournal_ro"
+  password: "${SOURCE_DB_PASSWORD}"
+
+cache_db:                               # Postgres container
+  host: "cdrj-postgres"
+  port: 5432
+  name: "cdrjournal"
+  user: "cdrjournal"
+  password: "${CACHE_DB_PASSWORD}"
+
+ingest:
+  interval_seconds: 15                  # how often new calls are read in
+  lookback_minutes: 10                  # overlap window for late-arriving legs
+  batch_size: 5000
+  initial_backfill_days: 365            # whole history on the first run
+  backfill_chunk_days: 7                # backfill in chunks (does not block)
+
+auth:
+  mode: "both"                          # oidc | local | both
+  oidc:
+    # Example: Authentik. Register the callback in the IdP: {base_url}/auth/callback
+    issuer: "https://auth.example.com/application/o/cdr-journal/"
+    # Empty server_metadata_url -> issuer + /.well-known/openid-configuration (OIDC standard,
+    # fits Authentik/Keycloak). NEXTCLOUD ("OIDC Identity Provider") differs and needs the
+    # discovery URL EXPLICITLY, e.g.:
+    #   server_metadata_url: "https://cloud.example.com/index.php/apps/oidc/openid-configuration"
+    # (the exact URL is in your Nextcloud OIDC settings; open it in a browser -> it must
+    #  return JSON with authorization_endpoint/token_endpoint.)
+    # server_metadata_url: ""
+    client_id: "cdr-journal"
+    client_secret: "${OIDC_CLIENT_SECRET}"
+    scopes: ["openid", "profile", "email", "groups"]
+    username_claim: "preferred_username"
+    groups_claim: "groups"
+    admin_groups: ["admin"]             # members of these groups become admins
+    button_label: "Authentik"           # text on the login button
+    # WHO is allowed to sign in is controlled in the IdP (client assignment) — not here.
+  local:
+    enabled: true                       # break-glass local login
+    # Generate a hash:  docker compose run --rm cdrj-web python -m app.auth.local "mypassword"
+    # Login works by username OR email. The email links this user to the OIDC
+    # login (same email -> same identity, same prefs).
+    #
+    # IMPORTANT: enter the bcrypt hash RAW here (in quotes) — NOT via ${ENV}/.env!
+    # bcrypt hashes contain '$', which Docker Compose interprets as variables in
+    # .env and destroys the hash. Compose does not touch config.yaml; our loader
+    # only replaces ${...} patterns.
+    users:
+      - username: "admin"
+        email: "admin@example.com"
+        display_name: "Administrator"
+        password_hash: "$2b$12$REPLACE_with_the_output_of_app.auth.local"
+        role: "admin"
+
+trunks:
+  known: ["easybell", "telekom", "sipgate"]
+  labels:
+    telekom: "Telekom"
+    easybell: "easybell"
+  fallback_nonnumeric_is_trunk: true
+
+journal:
+  # Hide non-telephony events from the journal. Applied at DISPLAY time (not during
+  # ingest) -> toggleable in the GUI without re-reading. The GUI writes changes back here.
+  hide:
+    contexts: ["door-alle"]   # e.g. door/paging contexts of your PBX
+    dst_values: []            # e.g. ["s"] for Asterisk placeholder destinations
+
+ui:
+  brand_title: "Call Journal"
+  page_size: 100
+  default_range_days: 7
+  live_refresh_seconds: 10              # auto refresh (GUI poll)
+  theme: "auto"                         # auto | light | dark
