@@ -1,3 +1,4 @@
 # Created locally by the operator — contains secrets, do NOT commit.
 .env
 config.yaml
+license/*.lic

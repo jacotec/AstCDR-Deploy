@@ -46,6 +46,19 @@ docker compose logs -f cdrj-ingest    # watch the backfill
 ```
 Then open the `base_url` in a browser and log in.
 
+## License (optional)
+
+AstCDR is donationware. **Without a license** it runs with limits: the journal
+shows at most the **100 most recent** calls and the ingest fetches at most the
+**last 30 days**. The footer shows *Unregistered Version*.
+
+**With a license** all limits are removed. To activate:
+1. Put your `astcdr.lic` into the **`license/`** folder (next to `docker-compose.yml`).
+2. `docker compose up -d` — that's it. The compose file never needs editing.
+
+The footer then reads *Licensed for &lt;name&gt;, &lt;email&gt; - Main Version N.x*.
+A license is tied to the **major version** (a `1` license covers all `1.x`).
+
 ## Operations
 - **Rebuild the cache** (only the call data; users/settings are kept) — as an
   admin via the gear icon → "Rebuild cache", or:

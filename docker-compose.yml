@@ -33,6 +33,9 @@ services:
     env_file: [.env]
     volumes:
       - ./config.yaml:/app/config.yaml:ro
+      # License: drop an astcdr.lic into the ./license folder -> full version.
+      # Empty folder = free version. The compose file never needs to change.
+      - ./license:/app/license:ro
     depends_on:
       cdrj-postgres:
         condition: service_healthy
@@ -49,6 +52,7 @@ services:
     env_file: [.env]
     volumes:
       - ./config.yaml:/app/config.yaml:ro
+      - ./license:/app/license:ro   # license folder (empty = free version)
       # FreePBX MariaDB socket (same host). Adjust the path if needed; only
       # required when source_db.socket is set in config.yaml.
       - /var/run/mysqld/mysqld.sock:/var/run/mysqld/mysqld.sock
