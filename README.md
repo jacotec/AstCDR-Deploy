@@ -13,6 +13,7 @@ on start.
 git clone https://git.jacotec.de/JaCoTec/AstCDR-Deploy.git /opt/astcdr
 cd /opt/astcdr
 cp .env.example .env                 # fill in secrets
+./setup-db-user.sh                   # create the read-only DB user (writes SOURCE_DB_PASSWORD)
 cp config.example.yaml config.yaml   # adapt to your own FreePBX
 docker compose up -d
 ```
