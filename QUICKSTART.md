@@ -85,5 +85,6 @@ A license is tied to the **major version** (a `1` license covers all `1.x`).
   ./reset-cache.sh
   ```
   Do **not** use `docker compose down -v` — that also deletes users/settings.
-- **Update** to a new version: set `CDRJ_IMAGE` in `.env` to the new tag, then
-  `docker compose pull && docker compose up -d`.
+- **Update** to a new version: `docker compose pull && docker compose up -d`.
+  (The default tag is `:latest`. To pin a fixed version instead, set
+  `CDRJ_IMAGE=…/astcdr:1.2.3` in `.env`.)
