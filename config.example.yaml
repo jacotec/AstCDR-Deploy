@@ -75,6 +75,10 @@ trunks:
     easybell: "easybell"
   fallback_nonnumeric_is_trunk: true
 
+geo:                                    # country/city for external numbers (offline, libphonenumber)
+  region: "DE"                          # default country for nationally-formatted numbers (e.g. "0221...")
+  lang: "de"                            # language of the location description (landline -> city)
+
 journal:
   # Hide non-telephony events from the journal. Applied at DISPLAY time (not during
   # ingest) -> toggleable in the GUI without re-reading. The GUI writes changes back here.
