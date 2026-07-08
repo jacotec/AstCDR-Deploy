@@ -27,6 +27,7 @@ The full guide (read-only DB user, OIDC, break-glass admin, operations) is in
 | `docker-compose.yml` | The three containers (web, ingest, postgres), prebuilt images |
 | `.env.example` | Secrets & ports — copy to `.env` and fill in |
 | `config.example.yaml` | Instance configuration — copy to `config.yaml` |
+| `setup-db-user.sh` | Creates the read-only MariaDB user AstCDR needs |
 | `reset-cache.sh` | Rebuild the call cache (users/settings are kept) |
 | `QUICKSTART.md` | Full installation and operations guide |
 
