@@ -67,7 +67,17 @@ shows at most the **100 most recent** calls and the ingest fetches at most the
 
 **With a license** all limits are removed. To activate:
 1. Put your `astcdr.lic` into the **`license/`** folder (next to `docker-compose.yml`).
-2. `docker compose up -d` — that's it. The compose file never needs editing.
+2. **Recreate** the containers so they read the license:
+   ```bash
+   docker compose down && docker compose up -d
+   ```
+   (A plain `docker compose up -d` does **not** recreate unchanged containers, so the
+   new license would not be picked up.)
+3. If this install ran as the **free version** before, rebuild the cache so the full
+   history is fetched (the free version only keeps the last 30 days):
+   ```bash
+   ./reset-cache.sh
+   ```
 
 The footer then reads *Licensed for &lt;name&gt;, &lt;email&gt; - Main Version N.x*.
 A license is tied to the **major version** (a `1` license covers all `1.x`).
