@@ -79,6 +79,7 @@ ingest:
   batch_size: 5000
   initial_backfill_days: 365
   backfill_chunk_days: 7
+  max_open_call_minutes: 240
 ```
 
 | Key | Meaning |
@@ -88,6 +89,7 @@ ingest:
 | `batch_size` | Rows fetched per query. |
 | `initial_backfill_days` | On the **first** run, how far back to import the whole history. |
 | `backfill_chunk_days` | The backfill is done in chunks of this size so it never blocks live ingest and the UI is usable quickly. |
+| `max_open_call_minutes` | Longest call guaranteed to be captured in full. While a call is in progress the ingest holds its read window open at the call's start, so a call longer than `lookback_minutes` isn't lost when it ends. The cap stops a never-ending (leaked) channel from holding the window forever. Default 4 h covers normal calls; raise for very long conferences. |
 
 ---
 

@@ -30,6 +30,10 @@ ingest:
   batch_size: 5000
   initial_backfill_days: 365            # whole history on the first run
   backfill_chunk_days: 7                # backfill in chunks (does not block)
+  max_open_call_minutes: 240            # longest call guaranteed to be captured in
+                                        # full (keeps the read window open while a
+                                        # call is in progress); raise for very long
+                                        # conference calls
 
 auth:
   mode: "both"                          # oidc | local | both
