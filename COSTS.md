@@ -20,16 +20,22 @@ cp costs.example.yaml costs.yaml   # then edit it to add your tariffs
 #   (Linux/macOS)  : > costs.yaml
 ```
 
-An **empty** `costs.yaml` simply means cost calculation is off. After creating or
-changing it, restart the stack:
+An **empty** `costs.yaml` simply means cost calculation is off.
 
-```bash
-docker compose up -d
-```
+**Applying changes.** When you edit `costs.yaml` in place, the ingest picks up the
+new tariffs **automatically** (within one poll cycle) — no restart needed. As an
+admin you can validate the file right away under gear icon → **Check config**.
 
-Existing calls only get costs after a **cache rebuild** (costs are computed as calls
-are read in): as an admin, gear icon → **Rebuild cache**, or `./reset-cache.sh` on
-the host. See [UPGRADE.md](UPGRADE.md).
+Existing calls keep their old cost until a **cache rebuild** (costs are computed as
+calls are read in): as an admin, gear icon → **Rebuild cache**, or `./reset-cache.sh`
+on the host. So the usual workflow after a tariff change is: edit `costs.yaml` →
+**Rebuild cache**.
+
+> If you only just **created** `costs.yaml` (it didn't exist when the stack came up),
+> the compose bind-mount needs to attach it once — run `docker compose up -d`. The
+> same applies if your editor saves atomically (new inode) and the container still
+> shows the old content: `docker compose up -d --force-recreate`. See
+> [UPGRADE.md](UPGRADE.md).
 
 ## The tariff file
 
