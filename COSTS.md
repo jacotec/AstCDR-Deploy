@@ -11,10 +11,17 @@ trunk — no external lookups.
 
 ## Enabling it
 
-Create a **`costs.yaml`** next to your `config.yaml` (a template ships as
-`costs.example.yaml`). If the file is missing, cost calculation is simply off.
+The compose file mounts a **`costs.yaml`** (next to your `config.yaml`) into the
+containers, so **the file must exist** — just like `config.yaml`. Create it:
 
-After creating or changing `costs.yaml`, restart the stack:
+```bash
+cp costs.example.yaml costs.yaml   # then edit it to add your tariffs
+# ...or, if you DON'T use call costs, just create an empty file:
+#   (Linux/macOS)  : > costs.yaml
+```
+
+An **empty** `costs.yaml` simply means cost calculation is off. After creating or
+changing it, restart the stack:
 
 ```bash
 docker compose up -d

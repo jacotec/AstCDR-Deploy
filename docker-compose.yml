@@ -33,6 +33,7 @@ services:
     env_file: [.env]
     volumes:
       - ./config.yaml:/app/config.yaml:ro
+      - ./costs.yaml:/app/costs.yaml:ro    # tariffs (must exist; empty file = no costs)
       # License: drop an astcdr.lic into the ./license folder -> full version.
       # Empty folder = free version. The compose file never needs to change.
       - ./license:/app/license:ro
@@ -52,6 +53,7 @@ services:
     env_file: [.env]
     volumes:
       - ./config.yaml:/app/config.yaml:ro
+      - ./costs.yaml:/app/costs.yaml:ro    # tariffs (must exist; empty file = no costs)
       - ./license:/app/license:ro   # license folder (empty = free version)
       # FreePBX MariaDB socket (same host). Adjust the path if needed; only
       # required when source_db.socket is set in config.yaml.

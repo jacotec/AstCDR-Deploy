@@ -20,9 +20,14 @@ git clone https://github.com/jacotec/AstCDR-Deploy.git /opt/astcdr
 cd /opt/astcdr
 cp .env.example .env                 # secrets & ports
 cp config.example.yaml config.yaml   # adapt to your own PBX
+: > costs.yaml                       # required by the compose mount; empty = no call costs
 ```
 
 _(Alternative: download the release tarball from the Releases page and extract it.)_
+
+> **Call costs (optional):** the compose mounts `costs.yaml`, so the file must
+> exist — an **empty** one keeps the feature off. To use it, `cp costs.example.yaml
+> costs.yaml` and edit it. See [COSTS.md](COSTS.md).
 
 ## 2. Create the read-only database user
 
