@@ -22,7 +22,8 @@ button in the header; this guide uses the English labels.
 
 ## Key figures (KPIs)
 
-Five cards summarize the current filter selection and update live:
+These cards summarize the current filter selection and update live (the last one
+appears only when call costs are configured):
 
 | Card | Meaning |
 |------|---------|
@@ -31,6 +32,7 @@ Five cards summarize the current filter selection and update live:
 | **Missed** | Inbound calls that were not answered (voicemail does **not** count as missed). |
 | **Avg. ring time** | Average time until answer. |
 | **Avg. talk time** | Average conversation length. |
+| **Cost** | Total estimated cost of the outbound calls in the selection. Only shown when a tariff file is configured — see [COSTS.md](COSTS.md). |
 
 ---
 
@@ -90,6 +92,7 @@ Each row is one logical call (all its legs folded together).
 | **Talk** | Conversation length. |
 | **Hung up** | Who ended the call (caller or an internal party). |
 | **Rec** | A red dot if a recording exists for the call. |
+| **Cost / Real cost / Zone / Quota** | Estimated cost of an **outbound** call, if a tariff file is configured — see [COSTS.md](COSTS.md). *Real cost* applies free minutes; *Quota* is the free minutes left this month. |
 
 Not every column is shown by default — see [Choosing columns](#choosing-columns).
 

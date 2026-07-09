@@ -59,6 +59,7 @@ Then open your `base_url` in a browser and log in. Full details: **[INSTALL.md](
 |----------|----------------|
 | **[INSTALL.md](INSTALL.md)** | Full installation: prerequisites, read-only DB user, first start, first login |
 | **[CONFIGURATION.md](CONFIGURATION.md)** | Complete `config.yaml` reference — every setting explained |
+| **[COSTS.md](COSTS.md)** | Outbound call cost calculation — the `costs.yaml` tariff file |
 | **[OIDC.md](OIDC.md)** | Single sign-on with Nextcloud, Authentik or Keycloak |
 | **[LICENSE.md](LICENSE.md)** | Free vs. licensed limits, activating a license |
 | **[UPGRADE.md](UPGRADE.md)** | Updating to a new version, when to rebuild the cache |

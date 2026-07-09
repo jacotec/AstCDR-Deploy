@@ -198,6 +198,14 @@ ui:
 
 ---
 
+## `costs.yaml` — outbound call costs (separate file)
+
+Cost calculation for outbound calls is configured in its **own** file,
+`costs.yaml` (next to `config.yaml`), not here. It's optional — without it, cost
+calculation is off. Full reference: **[COSTS.md](COSTS.md)**.
+
+---
+
 ## Applying changes
 
 `config.yaml` is mounted read-only into the containers. After editing:
