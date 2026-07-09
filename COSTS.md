@@ -225,7 +225,8 @@ show:
 
 - **Cost** — the gross price, ignoring free minutes.
 - **Real cost** — what you actually pay, with free minutes applied.
-- **Quota** — the free minutes left for that zone this month, as `h:mm`.
+- **Quota** — the free minutes left for that zone this month, as `(h:)mm:ss` (the
+  same format as call duration; hours are shown only from one hour up).
 
 ## What you see
 
