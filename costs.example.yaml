@@ -1,0 +1,78 @@
+# AstCDR — tariff / cost file (cost calculation for OUTBOUND calls).
+# Copy to costs.yaml (next to config.yaml). If the file is missing, cost
+# calculation is simply inactive. Full description: COSTS.md.
+#
+# One section per trunk (matched case-insensitively against the cdr trunk), with
+# `settings` (required) and `zones` (required, must include `national` AND
+# `international`).
+# IMPORTANT: QUOTE every prefix / digit value ("+49.", "0", "00") — otherwise YAML
+# turns them into numbers and drops the leading "+".
+
+easybell:
+  settings:
+    currency: "€"
+    bill_interval: 60          # billing increment in seconds: 1 = per-second, 60 = per-minute
+    country_code: "+49"        # your own country (E.164) — the implicit prefix of `national`
+    local_area: "2275"         # your own area code (without the 0) — for numbers dialed without a prefix
+    national_prefix: "0"       # national dialing prefix
+    intl_prefix: "00"          # international dialing prefix
+
+  zones:
+    # REQUIRED. No prefix (= country_code). Optional monthly free minutes.
+    national:
+      name: National
+      cost: 0.015              # price per minute (up to 4 decimals)
+      freemin: 1000
+
+    mobile:
+      name: Mobile
+      prefixes:                # longest prefix wins; "." = anything from here, "X" = one digit
+        - "+49151."
+        - "+49152."
+        - "+49157."
+        - "+49159."
+        - "+4916."
+        - "+4917."
+      cost: 0.19
+      freemin: 200
+
+    swiss:
+      name: Switzerland
+      prefixes: ["+41."]
+      cost: 0.09
+
+    europe:
+      name: Europe
+      prefixes: ["+43.", "+31.", "+33.", "+48.", "+353."]
+      cost: 0.045
+      freemin: 500
+
+    # Emergency / service numbers: matched RAW against the dialed number (no
+    # normalization). Use no_normalize for anything that isn't a real E.164 destination.
+    emergency:
+      name: Emergency
+      prefixes: ["110", "112"]
+      cost: 0
+      no_normalize: true
+
+    # REQUIRED. Fallback for everything else. No prefix.
+    international:
+      name: International
+      cost: 0.29
+
+# Example of a second trunk (same currency -> the KPI total can be summed).
+Telekom:
+  settings:
+    currency: "€"
+    bill_interval: 60
+    country_code: "+49"
+    local_area: "2275"
+    national_prefix: "0"
+    intl_prefix: "00"
+  zones:
+    national:
+      name: National
+      cost: 0
+    international:
+      name: International
+      cost: 0.39
