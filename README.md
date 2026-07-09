@@ -10,6 +10,36 @@ This repo contains **only the startup files** (no sources). The container images
 are pulled from the public registry `ghcr.io/jacotec/astcdr` automatically
 on start.
 
+## Disclaimer
+
+I built this project purely for my own needs, with exactly the features I want
+from a CDR app for my own FreePBX boxes. But if you happen to share my taste,
+you're more than welcome to use it too. So here's the deal:
+
+When the project is done, it's done — unless I decide I feel like building
+something else onto it. If it breaks five years from now because Asterisk changed
+something crucial and I've long since wandered off to a different PBX and don't
+need it anymore, then it's broken. This is a "I've got a little time on the couch
+right now" kind of thing. You're very welcome to report bugs in the Issues;
+feature requests I'll probably ignore.
+
+Why isn't it fully open source? Because between the job, the family, and the
+thousand things that always need doing, I simply have zero time for it. I'd have
+to maintain it, review PRs, discuss proposals. And it's really not my style to
+toss a repo out into the world and go, "someone please take care of this — but
+don't mess it up for me." When I do have a bit of time for the community, I test a
+ton and file issues or feature requests on other exciting projects — but I get to
+do that whenever I feel like it and actually have the time. And if that's not the
+case for half a year, then it just isn't.
+
+So, in the spirit of honesty: if you're happy to play with it under these terms —
+wonderful. The last 30 days and the last 100 calls work with no restrictions.
+And once it's finished and genuinely good, I'll probably release the full version
+without those limits (via a license file) in exchange for a small donation.
+
+And if you think all of this is lame — I completely understand. In that case, I
+can only point you toward another project or a commercial module.
+
 ## Quick start
 
 ```bash
