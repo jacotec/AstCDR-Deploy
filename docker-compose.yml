@@ -27,7 +27,7 @@ services:
       retries: 10
 
   cdrj-web:
-    image: ${CDRJ_IMAGE:-git.jacotec.de/jacotec/astcdr:latest}
+    image: ${CDRJ_IMAGE:-ghcr.io/jacotec/astcdr:latest}
     restart: unless-stopped
     command: ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8080", "--proxy-headers"]
     env_file: [.env]
@@ -46,7 +46,7 @@ services:
     networks: [internal]
 
   cdrj-ingest:
-    image: ${CDRJ_IMAGE:-git.jacotec.de/jacotec/astcdr:latest}
+    image: ${CDRJ_IMAGE:-ghcr.io/jacotec/astcdr:latest}
     restart: unless-stopped
     command: ["python", "-m", "app.ingest.worker"]
     env_file: [.env]

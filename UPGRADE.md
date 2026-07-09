@@ -16,7 +16,7 @@ release. Your data (cache, users, settings) is preserved across updates.
 To stay on a specific version (and update only deliberately), set in `.env`:
 
 ```bash
-CDRJ_IMAGE=git.jacotec.de/jacotec/astcdr:1.0.3
+CDRJ_IMAGE=ghcr.io/jacotec/astcdr:1.0.3
 ```
 
 Then `docker compose up -d`. Bump the number when you want to move up.

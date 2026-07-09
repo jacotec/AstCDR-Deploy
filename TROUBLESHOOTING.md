@@ -15,8 +15,8 @@ docker compose logs -f cdrj-web         # web app / login
 The images are public, but a pull can still fail if you are logged in to the
 registry with an account that lacks access, or the registry requires sign-in.
 
-- Try an anonymous pull: `docker logout git.jacotec.de` then `docker compose pull`.
-- Check your internet/proxy can reach `git.jacotec.de`.
+- Try an anonymous pull: `docker logout ghcr.io` then `docker compose pull`.
+- Check your internet/proxy can reach `ghcr.io`.
 
 ## No calls appear / the journal stays empty
 

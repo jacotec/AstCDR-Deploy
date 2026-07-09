@@ -7,13 +7,13 @@ time and status are derived. Optional country/city columns for external numbers,
 OIDC login, light/dark, fully responsive.
 
 This repo contains **only the startup files** (no sources). The container images
-are pulled from the public registry `git.jacotec.de/jacotec/astcdr` automatically
+are pulled from the public registry `ghcr.io/jacotec/astcdr` automatically
 on start.
 
 ## Quick start
 
 ```bash
-git clone https://git.jacotec.de/JaCoTec/AstCDR-Deploy.git /opt/astcdr
+git clone https://github.com/jacotec/AstCDR-Deploy.git /opt/astcdr
 cd /opt/astcdr
 cp .env.example .env                 # fill in secrets & ports
 ./setup-db-user.sh                   # create the read-only DB user (writes SOURCE_DB_PASSWORD)

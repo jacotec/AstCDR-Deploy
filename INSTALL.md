@@ -16,7 +16,7 @@ Step-by-step setup of AstCDR from the prebuilt images. Plan for ~15 minutes.
 ## 1. Get the files
 
 ```bash
-git clone https://git.jacotec.de/JaCoTec/AstCDR-Deploy.git /opt/astcdr
+git clone https://github.com/jacotec/AstCDR-Deploy.git /opt/astcdr
 cd /opt/astcdr
 cp .env.example .env                 # secrets & ports
 cp config.example.yaml config.yaml   # adapt to your own PBX
