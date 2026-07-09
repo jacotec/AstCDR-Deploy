@@ -208,11 +208,21 @@ calculation is off. Full reference: **[COSTS.md](COSTS.md)**.
 
 ## Applying changes
 
-`config.yaml` is mounted read-only into the containers. After editing:
+`config.yaml` and `costs.yaml` are mounted read-only into the containers. Because
+only the file **content** changes (not the container definition), a plain
+`docker compose up -d` will **not** restart the containers — they keep the old
+config in memory. Force fresh containers:
 
 ```bash
-docker compose up -d        # recreates containers with the new config
+docker compose up -d --force-recreate
 ```
+
+**`costs.yaml` specifically:** the ingest re-reads it automatically (within one poll
+cycle), so a tariff change doesn't strictly need a restart — but **existing** calls
+keep their old cost until you rebuild the cache (admin: gear → **Rebuild cache**, or
+`./reset-cache.sh`). See [COSTS.md](COSTS.md). If you only just **created**
+`costs.yaml`, run `docker compose up -d --force-recreate` once so the bind-mount
+attaches.
 
 A freshly added **license** file is the exception — it is picked up automatically
 without a restart (see [LICENSE.md](LICENSE.md)).
