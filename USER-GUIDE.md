@@ -154,6 +154,10 @@ At the bottom: the total number of matching calls, a **per page** selector
 ## Admin settings
 
 Admins get a **gear** icon in the header:
+- **Logo & app icon** — upload your own **logo** (PNG) and browser-tab **icon**
+  (PNG or ICO) to brand the app. The logo appears in the header and on the login
+  page; without an upload the built-in glyph is used. Max 2 MB per file; reset
+  either back to the default anytime.
 - **Hide contexts** — manage which dialplan contexts/destinations are hidden from
   the journal (written back to `journal.hide`).
 - **Rebuild cache** — re-derive the journal from the PBX data. Users and settings
