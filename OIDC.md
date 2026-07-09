@@ -71,6 +71,9 @@ email (same identity, same saved preferences).
 1. Install/enable the **OIDC Identity Provider** app.
 2. Add a client: redirect URI `{base_url}/auth/callback`. Note the client ID/secret.
 3. Make sure a **groups** claim is emitted if you want `admin_groups` to work.
+   Note: Nextcloud typically returns groups from the **`userinfo` endpoint**
+   (not inside the id_token) — enable the group sharing / `groups` scope on the
+   client. AstCDR reads them from userinfo automatically.
 4. Set `server_metadata_url` explicitly (see above).
 
 ### Authentik
@@ -95,7 +98,11 @@ email (same identity, same saved preferences).
   `{base_url}/auth/callback`, and `base_url` must match what the reverse proxy
   serves (scheme + host).
 - **No admin rights:** check that `groups` is in `scopes`, the `groups_claim`
-  matches your IdP's claim name, and the user is in one of `admin_groups`.
+  matches your IdP's claim name, and the user is in one of `admin_groups`. The
+  role is applied on **(re-)login** — sign out and back in after group changes.
+- **See what the IdP actually sent:** `docker compose logs cdrj-web | grep OIDC-Login`
+  prints the received claim keys, the group value and the resulting role — the
+  fastest way to see why a mapping didn't take.
 - **"discovery failed" / cannot reach metadata:** verify the discovery URL returns
   JSON in a browser; for Nextcloud set `server_metadata_url` explicitly.
 - **Login works but session drops:** ensure `base_url` is `https` in production so
