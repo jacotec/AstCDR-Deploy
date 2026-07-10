@@ -105,6 +105,39 @@ fallback. You can add any number of extra zones (mobile, per country, groups, �
 
 *Extra zones need at least one prefix; `national`/`international` must have none.
 
+## One tariff for several trunks
+
+If two (or more) trunks bill at **exactly the same rates** — e.g. a main line and a
+backup registration on the same contract, or two site trunks of one provider — you
+don't have to copy the whole zone list. Define the tariff once with a YAML **anchor**
+(`&name`) and pull it into the other trunks with an **alias** (`*name`):
+
+```yaml
+provider_main: &shared_tariff        # define the tariff once, name the anchor
+  settings:
+    currency: "€"
+    bill_interval: 60
+    country_code: "+49"
+    local_area: "2275"
+    national_prefix: "0"
+    intl_prefix: "00"
+  zones:
+    national: { name: National, cost: 0.015 }
+    # … all your other zones, listed only once …
+    international: { name: International, cost: 0.29 }
+
+provider_backup: *shared_tariff      # reuse the whole block — no copy-paste
+```
+
+Both `provider_main` and `provider_backup` end up with the **identical** tariff, but
+the long zone list lives in the file only once. Change a price in one place and both
+trunks follow.
+
+> The anchor name (`shared_tariff`) is arbitrary — it only links the alias to the
+> anchor. The **trunk keys** (`provider_main`, `provider_backup`) are what must match
+> the trunk names in your CDRs (case-insensitive). You can alias into as many trunks
+> as you like.
+
 ## Create Tariff Data with AI
 
 Nobody should hand-type a hundred country rates in 2026. Your provider publishes a
