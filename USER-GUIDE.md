@@ -144,6 +144,30 @@ look or before a wide export.
 
 ---
 
+## Export & printing
+
+The **printer** button in the header exports the **currently filtered** calls — a
+dialog lets you pick a format. There's no row selection: the export always contains
+exactly what your filter shows (all matches, in the current sort order).
+
+- **CSV** — **every** column, regardless of what's currently shown. UTF-8 with a BOM
+  and semicolon-separated, so Excel (incl. German locale) opens it cleanly. Durations
+  are in seconds, timestamps in ISO form, costs as plain numbers — ready for pivots.
+- **PDF** — a real, downloadable PDF in A4 portrait. It prints the columns you
+  currently see (the **All columns** checkbox is respected). Tick **Include call
+  details** to expand every call with its full timeline (transfers, parking,
+  conference, voicemail, cost breakdown). Each call is a self-contained card that
+  never breaks across a page; every page carries your logo, the app title, the
+  **active filters in plain text**, and a **Page x/y** footer.
+
+Clicking a format shows a short **spinner** while the file is generated and starts the
+download when it's ready — a large PDF (thousands of calls) can take a few seconds.
+
+> The **free-version** cap applies here too: an export contains at most the first 100
+> calls. See [LICENSE.md](LICENSE.md).
+
+---
+
 ## Paging
 
 At the bottom: the total number of matching calls, a **per page** selector
