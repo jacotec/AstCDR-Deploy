@@ -10,6 +10,13 @@ This repo contains **only the startup files** (no sources). The container images
 are pulled from the public registry `ghcr.io/jacotec/astcdr` automatically
 on start.
 
+## Demo
+
+A live demo is available at **[astcdr.jacotec.de](https://astcdr.jacotec.de)**:
+
+- **Username:** `demo`
+- **Password:** `demo`
+
 ## Disclaimer
 
 I built this project purely for my own needs, with exactly the features I want
@@ -34,8 +41,11 @@ case for half a year, then it just isn't.
 
 So, in the spirit of honesty: if you're happy to play with it under these terms —
 wonderful. The last 30 days and the last 100 calls work with no restrictions.
-And once it's finished and genuinely good, I'll probably release the full version
-without those limits (via a license file) in exchange for a small donation.
+
+For every donation of €25 or more, I'll gladly issue a license file that removes
+this limit. For details, see [LICENSE.md](LICENSE.md).
+
+<a href="https://buymeacoffee.com/jacotec" target="_blank"><img src="https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png" alt="Buy me a coffee" height="48"></a>
 
 And if you think all of this is lame — I completely understand. In that case, I
 can only point you toward another project or a commercial module.

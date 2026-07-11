@@ -9,6 +9,13 @@ license is a small signed file you drop in place.
 AstCDR is built and maintained by one developer in his own time. If it's useful to
 you, a small donation keeps it maintained and new features coming:
 
+For every donation of €25 or more, I'll issue you a license that removes the free
+version's limits (the 100-row and 30-day caps). If you'd like one, please write
+**"I'd like a license"** in your donation message, along with the **name** and
+**email address** the license should be made out to. Please also tick **"Make this
+message private"** so your details don't become public. I'll then send you the
+license file by email.
+
 <a href="https://buymeacoffee.com/jacotec" target="_blank"><img src="https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png" alt="Buy me a coffee" height="48"></a>
 
 → [buymeacoffee.com/jacotec](https://buymeacoffee.com/jacotec) — thank you! 🙏
