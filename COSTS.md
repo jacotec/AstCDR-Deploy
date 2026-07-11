@@ -267,6 +267,8 @@ show:
   Show/hide them like any other column.
 - A **Cost** KPI card summing the *real* cost of the currently filtered calls.
 - The same values in the expanded call detail.
+- A **cost overview** at the top of the **PDF export**: gross and real cost per
+  trunk for the filtered calls, with a total row when more than one trunk is billed.
 
 Money is formatted per your interface language (e.g. `0,04 €` in German, `€0.04`
 in English).

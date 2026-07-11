@@ -159,6 +159,9 @@ exactly what your filter shows (all matches, in the current sort order).
   conference, voicemail, cost breakdown). Each call is a self-contained card that
   never breaks across a page; every page carries your logo, the app title, the
   **active filters in plain text**, and a **Page x/y** footer.
+  - If costs are configured, the PDF opens with a **cost overview** right under the
+    filter line: **Cost** and **Real cost** per trunk (only trunks that carry costs in
+    the current view), plus a **total** row when more than one trunk is billed.
 
 Clicking a format shows a short **spinner** while the file is generated and starts the
 download when it's ready — a large PDF (thousands of calls) can take a few seconds.
