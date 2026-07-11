@@ -4,6 +4,15 @@ AstCDR is **donationware**. It runs fully without a license, but with limits. A
 license removes those limits. There is **no expiry** and **no host binding** — the
 license is a small signed file you drop in place.
 
+## Support AstCDR ☕
+
+AstCDR is built and maintained by one developer in his own time. If it's useful to
+you, a small donation keeps it maintained and new features coming:
+
+<a href="https://buymeacoffee.com/jacotec" target="_blank"><img src="https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png" alt="Buy me a coffee" height="48"></a>
+
+→ [buymeacoffee.com/jacotec](https://buymeacoffee.com/jacotec) — thank you! 🙏
+
 ## Free vs. licensed
 
 | | Free (no license) | Licensed |
