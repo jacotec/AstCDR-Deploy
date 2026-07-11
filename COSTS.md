@@ -270,8 +270,8 @@ show:
 - A **cost overview** at the top of the **PDF export**: gross and real cost per
   trunk for the filtered calls, with a total row when more than one trunk is billed.
 
-Money is formatted per your interface language (e.g. `0,04 €` in German, `€0.04`
-in English).
+Money is formatted per your interface language (e.g. `0,04 €` in German, Spanish and
+French, `€0.04` in English).
 
 ## Checking your tariff file
 

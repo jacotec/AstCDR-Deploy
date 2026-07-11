@@ -4,8 +4,8 @@ How to read and work with the call journal. This is the day-to-day guide for
 everyone using AstCDR; installation and configuration are covered separately
 ([INSTALL.md](INSTALL.md), [CONFIGURATION.md](CONFIGURATION.md)).
 
-You can switch the interface between **English and German** with the language
-button in the header; this guide uses the English labels.
+You can switch the interface between **English, German, Spanish and French** with
+the language menu in the header; this guide uses the English labels.
 
 ---
 
@@ -13,7 +13,8 @@ button in the header; this guide uses the English labels.
 
 - **Live** — shows the auto-refresh is active; the journal updates itself every
   few seconds, no reload needed.
-- **EN / DE** — interface language (remembered per user).
+- **Language** (globe) — a menu to pick the interface language: English, German,
+  Spanish or French (remembered per user).
 - **Theme** (moon/sun) — dark / light / follow the OS.
 - **Fullscreen** — hides the header, KPIs and filters to show as many rows as
   possible; a floating button brings them back.
