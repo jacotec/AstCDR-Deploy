@@ -40,8 +40,8 @@ appears only when call costs are configured):
 ## Filtering
 
 ### Date range
-Use the **presets** — *Today*, *7 days*, *30 days*, *All* — or pick an exact
-**from/to** range with the date fields.
+Use the **presets** — *Today*, *7 days*, *30 days*, *This month*, *Last month*,
+*All* — or pick an exact **from/to** range with the date fields.
 
 ### Search field
 Free text over **all participants** of a call — numbers **and** names, on both the
