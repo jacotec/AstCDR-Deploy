@@ -267,11 +267,19 @@ show:
   Show/hide them like any other column.
 - A **Cost** KPI card summing the *real* cost of the currently filtered calls.
 - The same values in the expanded call detail.
-- A **cost overview** at the top of the **PDF export**: gross and real cost per
-  trunk for the filtered calls, with a total row when more than one trunk is billed.
+- A **cost overview** at the top of the journal **PDF export**: gross and real cost
+  per trunk for the filtered calls, with a total row when more than one trunk is billed.
+- A dedicated **Cost analysis** view (the **Costs** tab in the header): totals,
+  charts (by month, by zone, per extension) and a trunk → zone → extension breakdown,
+  with its own PDF/CSV export and a **Details** jump into the filtered journal. See
+  [USER-GUIDE.md](USER-GUIDE.md#cost-analysis).
 
 Money is formatted per your interface language (e.g. `0,04 €` in German, Spanish and
 French, `€0.04` in English).
+
+> **Unanswered outbound calls cost nothing** and carry no zone — only *answered*
+> outbound calls are billed. (If you upgraded from an early build, run a one-time
+> **cache rebuild** so older unanswered calls drop their leftover zone tag.)
 
 ## Checking your tariff file
 

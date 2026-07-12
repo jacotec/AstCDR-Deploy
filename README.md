@@ -4,7 +4,9 @@ A ready-built, containerized **call journal for FreePBX 17 / Asterisk 22** —
 including the **trunk column** that commercial CTI solutions leave empty. Call
 legs are folded per `linkedid` into one logical row; direction, trunk, ring/talk
 time and status are derived. Optional country/city columns for external numbers,
-OIDC login, light/dark, fully responsive.
+outbound **call-cost tracking** with a dedicated **cost-analysis** view (charts +
+trunk/zone/extension breakdown, PDF/CSV export), OIDC login, four UI languages
+(EN/DE/ES/FR), light/dark, fully responsive.
 
 This repo contains **only the startup files** (no sources). The container images
 are pulled from the public registry `ghcr.io/jacotec/astcdr` automatically

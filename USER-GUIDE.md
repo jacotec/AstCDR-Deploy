@@ -9,6 +9,18 @@ the language menu in the header; this guide uses the English labels.
 
 ---
 
+## Views
+
+The header's left side has a **view switcher** with three views. The **filter row is
+identical in every view**, and your current filter (date range, trunks, search …)
+**carries over** when you switch — filter once, look at it three ways:
+
+- **List** — the call journal (this guide's main subject).
+- **Costs** — the [cost analysis](#cost-analysis) of your outbound calls.
+- **Statistics** — call statistics (coming soon).
+
+---
+
 ## The header
 
 - **Live** — shows the auto-refresh is active; the journal updates itself every
@@ -179,6 +191,53 @@ At the bottom: the total number of matching calls, a **per page** selector
 
 > In the **free version**, the journal shows at most the 100 most recent calls and
 > the engine keeps only the last 30 days. See [LICENSE.md](LICENSE.md).
+
+---
+
+## Cost analysis
+
+The **Costs** view breaks down the cost of your **outbound** calls for the current
+filter. Only answered outbound calls incur cost, so this view is outbound-only, and
+any direction filter set elsewhere is ignored here. It needs a tariff file — see
+[COSTS.md](COSTS.md).
+
+### Key figures
+A row of totals for the current filter: **Cost** (gross), **Real cost** (after free
+minutes), **Savings** (what the free minutes saved you), **Outbound talk time**, and
+the **number of outbound calls**.
+
+### Charts
+Three charts, stacked one below the other:
+- **Cost by month** — gross vs. real cost per month (your "phone bill" over time),
+  with a €-axis. Use the **enlarge** button (top-right) to open it large in an overlay.
+- **Real cost by zone** — where the money goes (National, Mobile, International …).
+- **Cost per extension** — gross and real cost per extension, shown as
+  `gross / real` next to each bar.
+
+### Breakdown (trunk → zone → extension)
+A list you expand in three levels:
+- **Trunk** — total duration, cost and real cost.
+- **Zone** (expand a trunk) — the same per zone, plus the remaining free-minute
+  **quota**. When your date range spans several months there is no single quota
+  value, so the **lowest** remaining value in the range is shown (prefixed `min.`).
+- **Extension** (expand a zone) — per extension in that zone. The **real cost per
+  extension is shared out fairly**, in proportion to each extension's *billed*
+  seconds — so the free-minute discount isn't just credited to whoever happened to
+  call last.
+
+Each zone and extension row has a **Details** link that jumps to the **List** view
+filtered to exactly those calls (that trunk/zone, outbound, answered only). The
+active zone filter appears there as a removable **"Zone: …"** pill above the list.
+
+### Export
+The **printer** button exports the breakdown for the current filter:
+- **PDF** — titled *Cost analysis*: header with your filters, the key figures, the
+  three charts, then the fully expanded list. A zone is never split across a page
+  break (unless it has more extensions than fit on one page), and the table header
+  repeats on every page.
+- **CSV** — a flat table mirroring the expanded list: one row per level (with a
+  *Level* column) and a totals row on top, ready to pivot in Excel. Charts are
+  visual only, so the CSV is the data behind them.
 
 ---
 
