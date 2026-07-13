@@ -70,8 +70,12 @@ Use the **presets** — *Today*, *7 days*, *30 days*, *This month*, *Last month*
 ### Search field
 The search field understands a small query language — plain text, field operators
 and boolean logic. It is **tolerant**: if a query doesn't parse, it falls back to a
-plain text search, so you always get a result. The **?** next to the field shows a
-quick reminder.
+plain text search, so you always get a result.
+
+Typing does **not** search as you go — so a longer query (`nst:50 UND nst:51`) is
+never cut off mid-way. Type the whole thing, then apply it with **Enter** or the
+**✓** button at the end of the field (handy on touch devices). The **×** before the
+**?** clears the search filter in one tap; the **?** shows a quick syntax reminder.
 
 **Plain text** matches over **all participants** — numbers and names, both sides,
 plus the trunk (substring, case-insensitive):
