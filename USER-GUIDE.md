@@ -118,6 +118,19 @@ as OR). Same effect as `#<ext>` in the search field.
 
 All filters live in the **URL**, so a filtered view is shareable and bookmarkable.
 
+### Saved filters
+Next to the date presets, the **Saved filters** dropdown lets you keep the filter
+combinations you use often. Set up any filter (date range, search, extensions,
+trunk, direction, checkboxes …), open the dropdown and choose **Save current
+filter**, then give it a name. It now appears in the list — click it on any view
+(Journal, Costs, Statistics) to apply it there; the **×** next to an entry removes
+it. Saving a new filter under an existing name overwrites it.
+
+Saved filters are stored **per user** (server-side, in your preferences), so they
+follow you to any browser once you sign in. They deliberately do **not** capture
+the page number or the interface language — only the filter itself. Break-glass
+local and OIDC users each keep their own set; anonymous access can't save filters.
+
 ---
 
 ## The table
