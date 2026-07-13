@@ -68,18 +68,42 @@ Use the **presets** — *Today*, *7 days*, *30 days*, *This month*, *Last month*
 *All* — or pick an exact **from/to** range with the date fields.
 
 ### Search field
-Free text over **all participants** of a call — numbers **and** names, on both the
-"from" and "to" side, plus the trunk. It's a substring match, so typing part of a
-number or name is enough.
+The search field understands a small query language — plain text, field operators
+and boolean logic. It is **tolerant**: if a query doesn't parse, it falls back to a
+plain text search, so you always get a result. The **?** next to the field shows a
+quick reminder.
 
-- **`+49221`** — finds every call where any number contains `+49221`.
-- **`Meier`** — finds every call where any name contains "Meier".
-- **`#14`** or **`nst:14`** — special: an **exact extension** match (not a
-  substring), so `14` won't also match `140` or `1400`. Use it to see all calls
-  involving extension 14.
+**Plain text** matches over **all participants** — numbers and names, both sides,
+plus the trunk (substring, case-insensitive):
+- **`+49221`** — any number containing `+49221`.
+- **`Meier`** — any name containing "Meier".
+- **`"Meier GmbH"`** — a quoted phrase, matched as one.
 
-> Combined boolean queries (AND/OR/NOT across several conditions) are not part of
-> the search field today — use the checkboxes and dropdown below to narrow further.
+**Field operators** target one field (each has a German and an English alias):
+
+| Operator | Matches |
+|----------|---------|
+| `nst:14` / `#14` | exact **extension** (not a substring) |
+| `von:` / `from:` | the **caller** (number or name) |
+| `an:` / `to:` | the **callee** (number or name) |
+| `amt:` / `trunk:` | the **trunk** |
+| `status:` | `answered`/`ok`, `missed`, `voicemail` |
+| `richtung:` / `dir:` | `inbound`, `outbound`, `internal` |
+| `zone:` | the cost **zone** |
+
+**Combine** with boolean logic:
+- **AND** — put terms side by side (implicit), or write `AND` / `UND`.
+- **OR** — `OR` / `ODER`.
+- **NOT** — a `-` prefix (`-nst:19`) or `NOT` / `NICHT`.
+- **Parentheses** to group: `(nst:19 OR nst:21) status:missed`.
+
+Examples:
+- `status:missed to:+49221 -nst:19` — missed calls to +49221…, but not extension 19.
+- `von:Meier richtung:inbound` — incoming calls from a caller named Meier.
+- `(amt:telekom OR amt:easybell) status:answered` — answered calls on either trunk.
+
+The dropdowns and checkboxes below still narrow further — they combine with your
+search as **AND**.
 
 ### Checkboxes
 - **Answered only** — successful calls.
