@@ -23,8 +23,19 @@ identical in every view**, and your current filter (date range, trunks, search �
 
 ## The header
 
-- **Live** — shows the auto-refresh is active; the journal updates itself every
-  few seconds, no reload needed.
+- **Live** — the auto-refresh toggle. When on (green dot), the journal updates
+  itself every few seconds, no reload needed. **Click it to pause**: the dot turns
+  into a yellow **pause** sign labelled *Paused* and the list freezes on the current
+  view — handy when new calls keep pushing the rows down while you read. Click again
+  to resume.
+- **Sync** — the health of the data pipeline (the ingest that reads calls from your
+  PBX). It is a status indicator, not a button:
+  - 🟢 **Sync active** — the ingest is up to date; data is current.
+  - 🟡 **Sync: building** (spinner) — the ingest is (re)building the cache or catching
+    up (e.g. first start, after a cache reset, or after downtime). The journal may be
+    incomplete while this runs.
+  - 🔴 **Sync offline** — the ingest hasn't reported in for a while; **the data may be
+    stale**. See [Troubleshooting](TROUBLESHOOTING.md).
 - **Language** (globe) — a menu to pick the interface language: English, German,
   Spanish or French (remembered per user).
 - **Theme** (moon/sun) — dark / light / follow the OS.

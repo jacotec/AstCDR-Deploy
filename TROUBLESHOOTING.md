@@ -33,6 +33,20 @@ Almost always the **ingest** can't reach the FreePBX database.
    Re-run `./setup-db-user.sh` if unsure (it is idempotent).
 5. The first backfill takes a moment — watch the ingest log; rows appear in chunks.
 
+## The **Sync** badge in the header shows *offline* or *building*
+
+The **Sync** badge reflects the ingest (data pipeline), not your browser.
+
+- 🟡 **Sync: building** is normal on first start, right after a cache reset, or while
+  catching up after downtime — the cache is filling. It clears on its own once the
+  ingest is caught up. If it never clears, watch `docker compose logs -f cdrj-ingest`
+  for a stuck backfill.
+- 🔴 **Sync offline** means the ingest hasn't reported in for `heartbeat_stale_seconds`
+  (default 120 s) — the process is stopped, crashed, or stuck, so **the data on screen
+  may be stale**. Check it: `docker compose ps` (is `cdrj-ingest` up?) and
+  `docker compose logs -f cdrj-ingest` (errors?). `docker compose up -d cdrj-ingest`
+  restarts it. The badge returns to *active* within a poll or two once it runs again.
+
 ## Can't log in as the local admin
 
 - The **bcrypt hash** must be in `config.yaml` (raw, in quotes), **not** in `.env`.
