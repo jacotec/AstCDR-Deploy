@@ -149,8 +149,11 @@ Click any row to expand it. The detail view shows:
 - **System / Context:** the announcement/cause and (for admins) the dialplan
   context.
 - **Conversation timeline:** the call's segments in order — bridges (↔ between two
-  parties), park (⏸), conferences, and voicemail (✉) — each with its ring and talk
-  timing. Transfers and Follow-Me hops appear here too.
+  parties), announcements (📢, the played prompt), IVR menu steps (🎛, which menu, the
+  prompt, and the key the caller pressed), park (⏸), conferences, and voicemail (✉) —
+  each with its ring and talk timing. Transfers, Follow-Me hops and consultation holds
+  appear here too (a caller held for a consultation shows talk → the consult → talk
+  again).
 
 Click the row again to collapse it. Open rows stay open while the journal
 auto-refreshes.
@@ -219,9 +222,12 @@ minutes), **Savings** (what the free minutes saved you), **Outbound talk time**,
 the **number of outbound calls**.
 
 ### Charts
-Three charts, stacked one below the other:
+Three charts: **Cost by month** spans the full width on its own row, with **Real cost
+by zone** and **Cost per extension** side by side below it.
 - **Cost by month** — gross vs. real cost per month (your "phone bill" over time),
-  with a €-axis. Use the **enlarge** button (top-right) to open it large in an overlay.
+  with a €-axis. Over long date ranges the month labels thin out to stay readable (the
+  bars stay monthly — month is the billing unit). Use the **enlarge** button (top-right)
+  to open it large in an overlay.
 - **Real cost by zone** — where the money goes (National, Mobile, International …).
 - **Cost per extension** — gross and real cost per extension, shown as
   `gross / real` next to each bar.
