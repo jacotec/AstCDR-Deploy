@@ -17,7 +17,8 @@ identical in every view**, and your current filter (date range, trunks, search �
 
 - **List** — the call journal (this guide's main subject).
 - **Costs** — the [cost analysis](#cost-analysis) of your outbound calls.
-- **Statistics** — call statistics (coming soon).
+- **Statistics** — [call statistics](#statistics): volume, heatmap, queues, per
+  extension and more.
 
 ---
 
@@ -249,6 +250,65 @@ The **printer** button exports the breakdown for the current filter:
 - **CSV** — a flat table mirroring the expanded list: one row per level (with a
   *Level* column) and a totals row on top, ready to pivot in Excel. Charts are
   visual only, so the CSV is the data behind them.
+
+---
+
+## Statistics
+
+The **Statistics** view aggregates the calls in your current filter into key
+figures, charts and tables. Unlike Costs, it covers **all directions**, and the
+filter-row checkboxes (*Only answered*, *Only missed*, *Only external*, *Show
+ignored*) apply here too — so every figure reflects exactly the calls you selected.
+
+### Key figures
+Total calls · Answered (with the answer rate) · Missed · average ring time ·
+average talk time.
+
+### Call volume over time
+A stacked bar chart (inbound / outbound / internal) with an **automatic time unit**:
+day, week, month, quarter or year, chosen so the chart stays readable (roughly ≤ 40
+bars). To zoom into weekly or daily detail, **narrow the date range** — the chart
+re-buckets automatically; the date filter is your zoom control. Labels thin out when
+there are many bars. Use the **enlarge** button (top-right) for a large overlay.
+
+### Direction & status
+Two donut charts — calls **by direction** and **by status** (answered / missed /
+voicemail / other) — each with counts and percentages.
+
+### Ring time
+How long callers waited before a call was answered, grouped into `< 5 s`, `5–10 s`,
+`10–20 s`, `20–30 s`, `≥ 30 s`.
+
+### Weekday × hour heatmap
+A 7 × 24 grid; the darker a cell, the more calls in that weekday/hour — your busy
+times at a glance.
+
+### Queues
+One row per call queue: **Offered**, **Answered**, **Abandoned** (caller hung up
+while waiting), **answer rate**, **Service level** (share answered within 20 s), and
+**average wait**. This is the reliable "how well do we answer?" view. A call that
+passed through several queues counts at each of them.
+
+### Per extension
+Per extension: inbound / outbound / internal counts, answered, average talk, average
+ring and total talk time. Note that this counts the extension that **answered** a
+call — for parallel-ringing queues that reflects who picked up, not a per-agent
+"answer rate" (which folded call data can't give reliably; use the Queues table for
+that).
+
+### Top callers / destinations, per trunk
+The busiest external **callers** and **destinations**, and a per-**trunk** summary.
+
+### Export
+The **printer** button exports the statistics for the current filter:
+- **PDF** — titled *Statistics*: header with your filters, the key figures, the
+  call-volume chart, the heatmap, horizontal bars for direction/status/ring time,
+  then the tables (queues, per extension, top callers/destinations, per trunk).
+  A table is never split across a page break unless it is longer than a whole page,
+  and the table header repeats on every page.
+- **CSV** — one file with a section per block (key figures, volume, queues, per
+  extension, top callers/destinations, per trunk); durations are in seconds for easy
+  processing. Charts are visual only, so the CSV is the data behind them.
 
 ---
 
