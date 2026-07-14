@@ -179,6 +179,19 @@ them. Applied at **display** time, not during ingest — so admins can toggle
 
 ---
 
+## `stats` — statistics page
+
+```yaml
+stats:
+  top_n: 10
+```
+
+| Key | Meaning |
+|-----|---------|
+| `top_n` | Number of rows in the **Top callers** and **Top destinations** lists on the Statistics page — one value for **both** lists, and it also applies to the statistics **PDF/CSV export**. Range **10–100**; values outside are clamped. Default `10`. |
+
+---
+
 ## `ui` — appearance & behavior
 
 ```yaml
