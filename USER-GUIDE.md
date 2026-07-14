@@ -91,6 +91,7 @@ plus the trunk (substring, case-insensitive):
 | `von:` / `from:` | the **caller** (number or name) |
 | `an:` / `to:` | the **callee** (number or name) |
 | `amt:` / `trunk:` | the **trunk** |
+| `via:` / `über:` | the **DDI / inbound number** a call came in over (the *Via* column). Aliases: `vía:`, `ddi:`. |
 | `status:` | `answered`/`ok`, `missed`, `voicemail` |
 | `richtung:` / `dir:` | `inbound`, `outbound`, `internal` |
 | `zone:` | the cost **zone** |
