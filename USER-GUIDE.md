@@ -195,7 +195,9 @@ Click any row to expand it. The detail view shows:
   prompt, and the key the caller pressed), park (⏸), conferences, and voicemail (✉) —
   each with its ring and talk timing. Transfers, Follow-Me hops and consultation holds
   appear here too (a caller held for a consultation shows talk → the consult → talk
-  again).
+  again). A transfer to a **dialplan destination** (e.g. a Custom Destination that just
+  plays an announcement, rather than another extension) shows a **↪ forwarded-to** step
+  with the destination it was sent to.
 
 Click the row again to collapse it. Open rows stay open while the journal
 auto-refreshes.
