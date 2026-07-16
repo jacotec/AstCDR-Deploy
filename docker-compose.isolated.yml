@@ -1,0 +1,95 @@
+# AstCDR — ISOLATED compose (bridge network). ALTERNATIVE, not the default.
+#
+# You do NOT need this file if AstCDR runs on the FreePBX itself — use the normal
+# docker-compose.yml (host mode) for that. This variant exists for two cases:
+#   * AstCDR runs on a DIFFERENT host than the PBX (then source_db must be reached
+#     over TCP: set source_db.host/port in config.yaml instead of source_db.socket), or
+#   * you deliberately don't want host mode (e.g. port 5432/3000 already taken).
+#
+# Usage: this file replaces the normal one. Either rename it —
+#   mv docker-compose.yml docker-compose.host.yml
+#   mv docker-compose.isolated.yml docker-compose.yml
+# — or pass it explicitly on EVERY command: docker compose -f docker-compose.isolated.yml up -d
+#
+# Trade-offs vs. host mode:
+#   + Postgres and the containers are isolated in their own network.
+#   - The published web port is DNAT'd and therefore BYPASSES the FreePBX firewall:
+#     it is reachable regardless of the firewall zones. Put a firewall in front of it.
+#   - A firewall reload on the same host (e.g. `fwconsole restart`) wipes Docker's
+#     iptables rules and cuts the containers off until `systemctl restart docker`.
+#     See TROUBLESHOOTING.md.
+services:
+  cdrj-postgres:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: cdrjournal
+      POSTGRES_USER: cdrjournal
+      POSTGRES_PASSWORD: ${CACHE_DB_PASSWORD}
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    networks: [internal]
+    # Deliberately NO ports: — Postgres stays inside the compose network.
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U cdrjournal -d cdrjournal"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  cdrj-web:
+    image: ${CDRJ_IMAGE:-ghcr.io/jacotec/astcdr:latest}
+    restart: unless-stopped
+    command: ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8080", "--proxy-headers"]
+    env_file: [.env]
+    # config.yaml defaults the cache to 127.0.0.1 (host mode). In the isolated
+    # network it is reached by its service name instead — set here so the SAME
+    # config.yaml works for both variants.
+    environment:
+      CACHE_DB_HOST: cdrj-postgres
+      CACHE_DB_PORT: "5432"
+    volumes:
+      - ./config.yaml:/app/config.yaml:ro
+      - ./costs.yaml:/app/costs.yaml:ro    # tariffs (must exist; empty file = no costs)
+      # License: drop an astcdr.lic into the ./license folder -> full version.
+      - ./license:/app/license:ro
+    depends_on:
+      cdrj-postgres:
+        condition: service_healthy
+    # Host port via .env (default 3000), bind 0.0.0.0 -> the TLS reverse proxy
+    # (HAProxy/nginx/Traefik) talks to this port. Inside the container it stays 8080.
+    ports:
+      - "${WEB_PORT:-3000}:8080"
+    networks: [internal]
+
+  cdrj-ingest:
+    image: ${CDRJ_IMAGE:-ghcr.io/jacotec/astcdr:latest}
+    restart: unless-stopped
+    command: ["python", "-m", "app.ingest.worker"]
+    env_file: [.env]
+    environment:
+      CACHE_DB_HOST: cdrj-postgres
+      CACHE_DB_PORT: "5432"
+    volumes:
+      - ./config.yaml:/app/config.yaml:ro
+      - ./costs.yaml:/app/costs.yaml:ro    # tariffs (must exist; empty file = no costs)
+      - ./license:/app/license:ro   # license folder (empty = free version)
+      # FreePBX MariaDB socket — only when AstCDR runs ON the PBX and
+      # source_db.socket is set. On a different host use source_db.host/port
+      # instead and delete this line.
+      # Mount the DIRECTORY, not the socket file: a file bind-mount binds the INODE,
+      # so after a MariaDB restart the container would keep pointing at the old,
+      # dead socket. No :ro — connecting to a Unix socket requires write permission.
+      - /var/run/mysqld:/var/run/mysqld
+    depends_on:
+      cdrj-postgres:
+        condition: service_healthy
+    # Fallback for TCP access if host:port is used instead of the socket.
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    networks: [internal]
+
+volumes:
+  pgdata: {}
+
+networks:
+  internal: {}

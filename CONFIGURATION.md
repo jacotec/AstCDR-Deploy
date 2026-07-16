@@ -56,17 +56,68 @@ source_db:
 
 ```yaml
 cache_db:
-  host: "cdrj-postgres"
-  port: 5432
+  host: "${CACHE_DB_HOST:-127.0.0.1}"
+  port: ${CACHE_DB_PORT:-5432}
   name: "cdrjournal"
   user: "cdrjournal"
   password: "${CACHE_DB_PASSWORD}"
 ```
 
-The bundled Postgres container. **Leave `host`/`name`/`user` as-is** — they match
-the compose service. Only set `CACHE_DB_PASSWORD` in `.env`. This cache is
-rebuildable (see [UPGRADE.md](UPGRADE.md)); it holds the reconstructed journal,
-plus users and their preferences.
+The bundled Postgres container. It runs **locally and listens on `127.0.0.1` only** —
+it is never reachable from your network, and it needs no firewall rule. **Leave these
+values as they are** and only set `CACHE_DB_PASSWORD` in `.env`. The cache is
+rebuildable (see [UPGRADE.md](UPGRADE.md)); it holds the reconstructed journal plus
+users and their preferences.
+
+| Key | Meaning |
+|-----|---------|
+| `host` / `port` | Written as `${ENV}` on purpose, so the **same `config.yaml` works for both compose variants** (see below). Don't hardcode a host here. |
+| `CACHE_DB_PORT` | Set it in `.env` **only if port 5432 is already taken** on this host (e.g. you already run a Postgres). The compose file and this config both follow that value. |
+
+---
+
+## Where AstCDR runs: host mode (default) vs. isolated
+
+The default `docker-compose.yml` uses **`network_mode: host`**: the containers use the
+machine's network stack directly — no Docker bridge, no NAT, no iptables rules. That is
+the right choice when AstCDR runs **on the FreePBX itself**, which is the normal case:
+
+- A **`fwconsole restart` can't cut AstCDR off the network.** It rewrites the firewall
+  and wipes Docker's iptables chains; with host mode there are none to wipe.
+- **The web port is governed by the FreePBX firewall.** A *published* Docker port is
+  DNAT'd and bypasses the firewall completely — it stays reachable no matter what your
+  zones say. In host mode it's an ordinary port and the firewall applies.
+
+So after installing, open the port there — otherwise nothing reaches the UI:
+
+> **Firewall → Custom Services → Create new Service**
+> Name `AstCDR`, protocol **TCP**, single port **3000** (your `WEB_PORT`), zone **Local**
+
+Only **one** inbound port is ever needed: the web UI. Postgres is loopback-only, and the
+ingest worker listens on nothing at all.
+
+### The isolated variant (optional)
+
+`docker-compose.isolated.yml` keeps the classic Docker bridge network and publishes the
+web port. **You don't need it for the normal setup** — it exists for two cases:
+
+- AstCDR runs on a **different host** than the PBX (then reach the PBX database over
+  TCP: use `source_db.host`/`port` instead of `source_db.socket`), or
+- you deliberately don't want host mode (e.g. port 3000 or 5432 is already taken).
+
+Use it by replacing the normal file:
+
+```bash
+mv docker-compose.yml docker-compose.host.yml
+mv docker-compose.isolated.yml docker-compose.yml
+docker compose up -d
+```
+
+Your `config.yaml` stays **unchanged** — the isolated compose points the cache at the
+container network itself. Be aware of the trade-offs: the published port **bypasses**
+the FreePBX firewall (put something in front of it), and if it runs on the PBX, a
+firewall reload will cut the containers off until `systemctl restart docker` (see
+[TROUBLESHOOTING.md](TROUBLESHOOTING.md)).
 
 ---
 

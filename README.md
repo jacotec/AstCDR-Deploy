@@ -143,7 +143,8 @@ Then open your `base_url` in a browser and log in. Full details: **[INSTALL.md](
 
 | File | Purpose |
 |------|---------|
-| `docker-compose.yml` | The three containers (web, ingest, postgres), prebuilt images |
+| `docker-compose.yml` | The three containers (web, ingest, postgres), prebuilt images, host networking |
+| `docker-compose.isolated.yml` | Optional alternative: classic bridge network — only if AstCDR runs on a *different* host than the PBX ([CONFIGURATION.md](CONFIGURATION.md)) |
 | `.env.example` | Secrets & ports — copy to `.env` and fill in |
 | `config.example.yaml` | Instance configuration — copy to `config.yaml` |
 | `setup-db-user.sh` | Creates the read-only MariaDB user AstCDR needs |
@@ -155,17 +156,6 @@ Then open your `base_url` in a browser and log in. Full details: **[INSTALL.md](
 - Docker + Docker Compose, Linux x86-64.
 - Access to the FreePBX MariaDB (local socket or LAN).
 - A reverse proxy with TLS in front (recommended).
-
-## Screenshots
-
-<img width="1822" height="935" alt="image" src="https://github.com/user-attachments/assets/6db05475-4c7b-4927-bcb6-4d16670973c3" />
-
-<img width="1835" height="937" alt="image" src="https://github.com/user-attachments/assets/8a62cc8a-ae36-4b4f-a4cf-610d9a371955" />
-
-<img width="1837" height="937" alt="image" src="https://github.com/user-attachments/assets/97714353-e306-4bf2-b2cd-7b4330ad0bbe" />
-
-
-
 
 ---
 © 2026 by Marco Jakobs

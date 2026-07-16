@@ -17,9 +17,12 @@ source_db:                              # FreePBX asteriskcdrdb — READ ONLY
   user: "cdrjournal_ro"
   password: "${SOURCE_DB_PASSWORD}"
 
-cache_db:                               # Postgres container
-  host: "cdrj-postgres"
-  port: 5432
+cache_db:                               # Postgres container (local, 127.0.0.1 only)
+  # Default compose runs in host mode -> the cache listens on loopback.
+  # The isolated compose (see CONFIGURATION.md) sets CACHE_DB_HOST/PORT itself,
+  # so this same file works for BOTH variants — don't hardcode a host here.
+  host: "${CACHE_DB_HOST:-127.0.0.1}"
+  port: ${CACHE_DB_PORT:-5432}          # set CACHE_DB_PORT in .env if 5432 is taken
   name: "cdrjournal"
   user: "cdrjournal"
   password: "${CACHE_DB_PASSWORD}"
@@ -34,6 +37,8 @@ ingest:
                                         # full (keeps the read window open while a
                                         # call is in progress); raise for very long
                                         # conference calls
+  heartbeat_stale_seconds: 120          # after this long without an ingest run, the
+                                        # web "Sync" badge shows offline (data may be stale)
 
 auth:
   mode: "both"                          # oidc | local | both
@@ -89,6 +94,25 @@ journal:
   hide:
     contexts: ["door-alle"]   # e.g. door/paging contexts of your PBX
     dst_values: []            # e.g. ["s"] for Asterisk placeholder destinations
+
+stats:
+  # Number of rows in the "Top callers" and "Top destinations" lists on the
+  # Statistics page (one value for BOTH lists). Range 10..100; out-of-range is
+  # clamped. Also applies to the PDF/CSV export of the statistics.
+  top_n: 10
+
+email:                                  # optional: SMTP for cost/quota/admin warnings
+  enabled: false                        # master switch (also needs host + from_email)
+  host: "smtp.example.com"
+  port: 587
+  security: "tls"                       # tls (STARTTLS) | ssl (implicit) | none
+  username: "${SMTP_USER}"              # optional (relays without auth)
+  password: "${SMTP_PASS}"              # via ${ENV}; never written to config.yaml
+  from_email: "cdr@example.com"
+  from_name: "Call Journal"
+  timeout: 10                           # seconds; a dead SMTP must not stall ingest
+  admin_alert_to: []                    # extra recipients for ADMIN error mails only
+                                        # (independent of the per-user checkboxes)
 
 ui:
   brand_title: "Call Journal"

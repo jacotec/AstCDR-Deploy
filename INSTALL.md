@@ -90,7 +90,24 @@ The minimum you must set (full reference: **[CONFIGURATION.md](CONFIGURATION.md)
 - **`trunks.known` / `trunks.labels`** — your trunk names, so the trunk column
   shows friendly labels.
 
-## 5. Start
+## 5. Open the web port in the FreePBX firewall
+
+AstCDR runs with **host networking**, so `WEB_PORT` is an ordinary port on the PBX —
+and the FreePBX firewall governs it. **Without this step nothing reaches the UI.**
+
+> **Firewall → Custom Services → Create new Service**
+> Name `AstCDR`, protocol **TCP**, single port **3000** (your `WEB_PORT`), zone **Local**
+
+Pick the zone that fits: **Local** for a reverse proxy in your LAN. This is the **only**
+inbound port AstCDR ever needs — the Postgres cache listens on `127.0.0.1` only, and the
+ingest worker listens on nothing at all.
+
+Why the firewall matters here: with the classic published-port setup, Docker DNATs the
+port and it stays reachable **regardless** of your firewall zones. Host mode puts that
+back under the firewall's control. (Skip this step only if you use
+`docker-compose.isolated.yml` — see [CONFIGURATION.md](CONFIGURATION.md).)
+
+## 6. Start
 
 ```bash
 docker compose up -d
@@ -100,7 +117,7 @@ docker compose logs -f cdrj-ingest    # watch the initial backfill
 The ingest worker fills the cache from your PBX history (chunked, so the UI is
 usable quickly and the rest streams in). Open your `base_url` and log in.
 
-## 6. First login
+## 7. First login
 
 - **Local admin:** the username/password from step 4.
 - **OIDC:** click the login button — see [OIDC.md](OIDC.md) for the IdP setup.

@@ -49,17 +49,20 @@ The **Sync** badge reflects the ingest (data pipeline), not your browser.
 
 ## After a PBX update, containers can't reach anything (build fails, no OIDC, no emails)
 
+> **Mostly historic.** Since AstCDR runs with `network_mode: host` by default, the
+> running containers no longer use Docker's iptables rules at all and are immune to
+> this. It still applies if you **build the image yourself** on the PBX (the build does
+> use the bridge network), or if you chose `docker-compose.isolated.yml`.
+
 Symptom: the host is perfectly fine (`ping`, `nslookup`, `git pull` all work), but
 **inside** a container nothing gets out. Typical signs, in any combination:
 
 - a rebuild dies on `Temporary failure resolving 'deb.debian.org'`,
-- **OIDC login** stops working,
-- **warning emails** stop arriving,
-- while the journal itself keeps working normally.
+- with the isolated variant: **OIDC login** stops working and **warning emails** stop
+  arriving, while the journal itself keeps working normally.
 
-That last part is the giveaway: Postgres runs on the compose network and the PBX
-database goes through the Unix socket — neither needs the outside world. Only OIDC,
-SMTP and image builds do.
+That last part is the giveaway: Postgres and the PBX database (Unix socket) don't need
+the outside world. Only OIDC, SMTP and image builds do.
 
 **Check it** (an IP address, so DNS is not involved):
 

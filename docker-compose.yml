@@ -8,20 +8,38 @@
 #   docker compose up -d
 #
 # Pin the image version via .env (CDRJ_IMAGE), otherwise the default below applies.
+#
+# NETWORK MODE host: the containers use the PBX's network stack directly — no
+# bridge network, no NAT, NO iptables rules. This is the right mode when AstCDR
+# runs ON the FreePBX itself:
+#   1. A `fwconsole restart` cannot cut the containers off the network — there
+#      are no Docker rules left for it to wipe.
+#   2. The web port goes through INPUT and is therefore governed by the FreePBX
+#      firewall, instead of bypassing it via DNAT. Open it there:
+#      Firewall -> Custom Services -> TCP ${WEB_PORT} (default 3000), zone Local.
+#
+# Postgres runs LOCALLY on 127.0.0.1 only (never exposed). If port 5432 is already
+# taken on this host, set CACHE_DB_PORT in .env.
+#
+# Running AstCDR on a DIFFERENT host than the PBX (or you don't want host mode)?
+# Use docker-compose.isolated.yml instead — see CONFIGURATION.md.
 services:
   cdrj-postgres:
     image: postgres:16-alpine
     restart: unless-stopped
+    network_mode: host
     environment:
       POSTGRES_DB: cdrjournal
       POSTGRES_USER: cdrjournal
       POSTGRES_PASSWORD: ${CACHE_DB_PASSWORD}
+    # Loopback ONLY: the cache is for our own containers. Without this, host mode
+    # would expose Postgres on the LAN. Change the port via .env if 5432 is taken.
+    command: ["postgres", "-c", "listen_addresses=127.0.0.1",
+              "-c", "port=${CACHE_DB_PORT:-5432}"]
     volumes:
       - pgdata:/var/lib/postgresql/data
-    networks: [internal]
-    # Deliberately NO ports: — Postgres stays inside the compose network.
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U cdrjournal -d cdrjournal"]
+      test: ["CMD-SHELL", "pg_isready -U cdrjournal -d cdrjournal -h 127.0.0.1 -p ${CACHE_DB_PORT:-5432}"]
       interval: 5s
       timeout: 3s
       retries: 10
@@ -29,7 +47,12 @@ services:
   cdrj-web:
     image: ${CDRJ_IMAGE:-ghcr.io/jacotec/astcdr:latest}
     restart: unless-stopped
-    command: ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8080", "--proxy-headers"]
+    network_mode: host
+    # No `ports:` — it has no effect in host mode. The port goes straight into
+    # uvicorn. Bound to 0.0.0.0 so a reverse proxy on the LAN can reach it; access
+    # is governed by the FreePBX firewall (Custom Service), not by the bind address.
+    command: ["uvicorn", "app.main:app", "--host", "0.0.0.0",
+              "--port", "${WEB_PORT:-3000}", "--proxy-headers"]
     env_file: [.env]
     volumes:
       - ./config.yaml:/app/config.yaml:ro
@@ -40,15 +63,11 @@ services:
     depends_on:
       cdrj-postgres:
         condition: service_healthy
-    # Host port via .env (default 3000), bind 0.0.0.0 -> the TLS reverse proxy
-    # (HAProxy/nginx/Traefik) talks to this port. Inside the container it stays 8080.
-    ports:
-      - "${WEB_PORT:-3000}:8080"
-    networks: [internal]
 
   cdrj-ingest:
     image: ${CDRJ_IMAGE:-ghcr.io/jacotec/astcdr:latest}
     restart: unless-stopped
+    network_mode: host
     command: ["python", "-m", "app.ingest.worker"]
     env_file: [.env]
     volumes:
@@ -66,13 +85,6 @@ services:
     depends_on:
       cdrj-postgres:
         condition: service_healthy
-    # Fallback for TCP access if host:port is used instead of the socket.
-    extra_hosts:
-      - "host.docker.internal:host-gateway"
-    networks: [internal]
 
 volumes:
   pgdata: {}
-
-networks:
-  internal: {}
