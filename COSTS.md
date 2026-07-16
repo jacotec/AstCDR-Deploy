@@ -89,6 +89,7 @@ easybell:
 | `local_area` | Your own area code, without the leading `0`. Used when a local number is dialed without any prefix. |
 | `national_prefix` | National dialing prefix (usually `0`). |
 | `intl_prefix` | International dialing prefix (usually `00`). |
+| `cost_warnings` | Optional list of monthly-cost thresholds (in currency units) for **email warnings** — see [below](#cost--quota-email-warnings). |
 
 ### Zones
 
@@ -102,8 +103,36 @@ fallback. You can add any number of extra zones (mobile, per country, groups, �
 | `cost` | yes | Price per minute (up to 4 decimals). |
 | `freemin` | no | Free minutes per **calendar month** for this zone. |
 | `no_normalize` | no | `true` → match against the **raw dialed** number (for emergency/service numbers). |
+| `contingent_warnings` | no | List of remaining-quota percentages for **email warnings** — see [below](#cost--quota-email-warnings). Needs `freemin`. |
 
 *Extra zones need at least one prefix; `national`/`international` must have none.
+
+## Cost & quota email warnings
+
+If email is set up (see **[CONFIGURATION.md](CONFIGURATION.md)** → `email`), the app
+can send a warning when a trunk gets expensive or a free-minute quota runs low. Users
+opt in per warning type on their **Account** page (click your name in the header),
+which also has a **Send test email** button.
+
+```yaml
+easybell:
+  settings:
+    cost_warnings: [50, 100, 250]      # currency units (net monthly cost, per trunk)
+  zones:
+    mobile:
+      freemin: 200
+      contingent_warnings: [50, 20, 10, 0]   # % of the monthly quota still left
+```
+
+- **`cost_warnings`** — when the trunk's **net monthly cost** (real cost, after free
+  minutes) crosses a threshold, subscribers to *Cost warnings* get one email. Each
+  threshold fires **once per calendar month**; the month resets it.
+- **`contingent_warnings`** — when a zone's **remaining free-minute quota** drops below
+  a percentage, subscribers to *Quota warnings* get one email. `0` means "fully used
+  up" and is sent exactly once. Needs `freemin` on the zone.
+- Only the **most relevant** threshold is sent per event (the highest cost level
+  reached, or the lowest quota percentage), so a big jump never floods the inbox.
+- Each recipient's email is in **their own language**.
 
 ## One tariff for several trunks
 

@@ -193,9 +193,11 @@ Click any row to expand it. The detail view shows:
 - **Conversation timeline:** the call's segments in order — bridges (↔ between two
   parties), announcements (📢, the played prompt), IVR menu steps (🎛, which menu, the
   prompt, and the key the caller pressed), park (⏸), conferences, and voicemail (✉) —
-  each with its ring and talk timing. Transfers, Follow-Me hops and consultation holds
-  appear here too (a caller held for a consultation shows talk → the consult → talk
-  again). A transfer to a **dialplan destination** (e.g. a Custom Destination that just
+  each with its ring and talk timing. Transfers and Follow-Me hops appear here too. When
+  an agent puts the caller on hold to ask a colleague before transferring, that
+  consultation shows as its own **⟳ Consultation** step (the two staff talking while the
+  caller waits on hold) between the caller's legs — so the timing adds up. A transfer to
+  a **dialplan destination** (e.g. a Custom Destination that just
   plays an announcement, rather than another extension) shows a **↪ forwarded-to** step
   with the destination it was sent to.
 
@@ -359,6 +361,30 @@ The **printer** button exports the statistics for the current filter:
 - **CSV** — one file with a section per block (key figures, volume, queues, per
   extension, top callers/destinations, per trunk); durations are in seconds for easy
   processing. Charts are visual only, so the CSV is the data behind them.
+
+---
+
+## Email notifications
+
+If the operator has set up email (see the operator's `email` configuration), you can
+choose to be warned by email. Open your **Account** page by clicking **your name** in
+the header — it appears only when email is configured.
+
+There you see the address that mail goes to (it comes from your account and is
+read-only here), a **Send test email** button to confirm delivery, and checkboxes:
+
+- **Cost warnings** — get an email when a trunk's monthly cost crosses a threshold the
+  operator configured.
+- **Quota warnings** — get an email when a zone's free-minute quota for the month runs
+  low (or is used up).
+- **Errors and warnings** *(admins only)* — get an email when something needs
+  attention: the data ingest goes offline, the PBX database becomes unreachable, the
+  tariff file has errors, or the license is invalid. A short **resolved** email follows
+  once the condition clears.
+
+All emails are in **your** language. Every checkbox is off by default — you opt in.
+Warnings are sent once per event (e.g. once per threshold per month), never on every
+call. Which trunks/zones have thresholds is set by the operator in the tariff file.
 
 ---
 

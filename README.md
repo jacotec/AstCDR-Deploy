@@ -1,16 +1,77 @@
 # AstCDR — Deploy Bundle
 
 A ready-built, containerized **call journal for FreePBX 17 / Asterisk 22** —
-including the **trunk column** that commercial CTI solutions leave empty. Call
-legs are folded per `linkedid` into one logical row; direction, trunk, ring/talk
-time and status are derived. Optional country/city columns for external numbers,
-outbound **call-cost tracking** with a dedicated **cost-analysis** view (charts +
-trunk/zone/extension breakdown, PDF/CSV export), OIDC login, four UI languages
-(EN/DE/ES/FR), light/dark, fully responsive.
+including the **trunk column** that commercial CTI solutions leave empty. Call legs
+are folded per `linkedid` into one logical row, so you read calls, not fragments.
 
 This repo contains **only the startup files** (no sources). The container images
 are pulled from the public registry `ghcr.io/jacotec/astcdr` automatically
 on start.
+
+## Features
+
+**The journal**
+- Call legs folded per `linkedid` into **one logical row** — direction, trunk,
+  ring/talk time and status derived from `cdr` + `cel`.
+- The **trunk column**: which line a call actually came in on or went out over.
+- Flags at a glance: queue, Follow-Me, transferred, parked, recording present —
+  plus **who hung up**.
+- Optional **country/city** for external numbers (offline lookup, no external service).
+- Pick which columns you want, and in which order — per user.
+
+**Call details**
+- The whole path of a call as a timeline: talk legs, **announcements**, **IVR steps**
+  (which menu, which prompt, which key the caller pressed), **park** (with slot),
+  **conference**, **voicemail**, **transfers** — including the **consultation** while
+  the caller sits on hold.
+- Ring and talk time per step, so the numbers add up.
+
+**Filtering & search**
+- Date range, extension, direction, "missed only" — plus a search field with field
+  operators, `AND`/`OR`/`NOT` and parentheses.
+- **Saved filters** per user. The filter lives in the URL, so every view is shareable
+  and bookmarkable.
+
+**Cost analysis** (optional)
+- Your own tariff file: zones by longest-prefix match, billing increment, **free
+  minutes** per zone and month.
+- Gross vs. **real** cost (free minutes applied) and the quota left — per call, and as
+  a **cost view** with charts and a trunk → zone → extension breakdown.
+
+**Statistics**
+- Call volume over time (adapts to the range), weekday × hour heatmap, direction and
+  status, ring time, **queues & service level**, per extension, top callers and
+  destinations, per trunk.
+
+**Email warnings** (optional)
+- A mail when a trunk crosses a **cost threshold** or a **free-minute quota** runs low.
+  You set the thresholds; each one fires once per month, not on every call.
+- Admins can also be warned when something breaks — ingest offline, PBX database
+  unreachable, bad tariff file, invalid license — with a "resolved" mail once it clears.
+- Everyone opts in per warning type, and every mail is in the recipient's language.
+
+**Export**
+- **PDF** and **CSV** for journal, costs and statistics. The PDF is rendered
+  server-side and takes your current filter with it.
+
+**Login & users**
+- **OIDC** single sign-on (Nextcloud, Authentik, Keycloak) plus a local break-glass
+  admin, with admin/user roles.
+- Theme, language, columns and saved filters live **per user on the server** — same
+  view on every device.
+
+**Live**
+- The journal refreshes itself and new calls slide in highlighted. A **Sync** badge
+  tells you whether the pipeline is live, catching up, or stopped.
+
+**Look**
+- Four languages (EN/DE/ES/FR), light/dark, responsive down to phone width — and your
+  own **logo and app icon**.
+
+**How it reads your PBX**
+- **Strictly read-only** on the FreePBX database (`SELECT` only, through its own
+  read-only user). Everything is folded into a separate Postgres cache; rebuilding that
+  cache never touches your PBX data and keeps users and settings.
 
 ## Demo
 

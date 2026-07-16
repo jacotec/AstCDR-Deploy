@@ -192,6 +192,50 @@ stats:
 
 ---
 
+## `email` — SMTP for warning notifications (optional)
+
+Lets the app send cost, quota and admin warnings by email. Optional — omit the
+block (or set `enabled: false`) to keep email off. Each recipient gets messages in
+their own language.
+
+```yaml
+email:
+  enabled: true
+  host: "smtp.example.com"
+  port: 587
+  security: "tls"            # tls (STARTTLS) | ssl (implicit) | none
+  username: "${SMTP_USER}"   # optional (relays without auth)
+  password: "${SMTP_PASS}"   # via ${ENV}; keep secrets out of config.yaml
+  from_email: "cdr@example.com"
+  from_name: "Call Journal"
+  timeout: 10
+  admin_alert_to: []         # extra recipients for ADMIN error mails only
+```
+
+| Key | Meaning |
+|-----|---------|
+| `enabled` | Master switch. Email is active only when this is `true` **and** `host` and `from_email` are set. |
+| `host` / `port` | Your SMTP server and port (typically 587 for STARTTLS, 465 for implicit SSL, 25 for none). |
+| `security` | `tls` = STARTTLS, `ssl` = implicit TLS, `none` = unencrypted. Certificate validation is on for `tls`/`ssl`. |
+| `username` / `password` | SMTP credentials. Optional — leave empty for relays that don't authenticate. Use `${ENV}` for the password. |
+| `from_email` / `from_name` | Envelope sender and display name. |
+| `timeout` | Connection timeout in seconds. A slow/dead server never stalls call ingest. |
+| `admin_alert_to` | Extra static recipients that always get **admin error** mails, independent of the per-user checkboxes. Cost/quota mails are per-user only. |
+
+**Admin error mails** fire on a state change (and a short "resolved" mail when it
+clears): the data ingest going **offline**, the **source database** becoming
+unreachable, **`costs.yaml`** having errors, or an **invalid/expired license**. They go
+to admins who ticked *Errors and warnings* on their Account page, plus `admin_alert_to`.
+
+**Recipients.** Each user's address comes from their account: OIDC users bring it
+from the login, local users from `auth.local.users[].email`. Users choose which
+warnings they want on the **Account** page (envelope icon in the header), which
+also has a **Send test email** button to verify the setup. Warning thresholds
+themselves are configured per trunk/zone in **[COSTS.md](COSTS.md)**
+(`cost_warnings`, `contingent_warnings`).
+
+---
+
 ## `ui` — appearance & behavior
 
 ```yaml

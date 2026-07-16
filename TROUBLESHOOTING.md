@@ -47,6 +47,50 @@ The **Sync** badge reflects the ingest (data pipeline), not your browser.
   `docker compose logs -f cdrj-ingest` (errors?). `docker compose up -d cdrj-ingest`
   restarts it. The badge returns to *active* within a poll or two once it runs again.
 
+## No warning emails arrive
+
+Always start with the **Send test email** button on your **Account** page (click your
+name in the header) — it isolates SMTP from the warning logic.
+
+**The Account page / your name isn't a link at all.** Email isn't active. It needs
+`email.enabled: true` **and** `host` **and** `from_email` in `config.yaml`. Anything
+missing → the whole section stays hidden.
+
+**The test email fails.** Almost always SMTP itself:
+- **Wrong `security` for the port.** `tls` = STARTTLS (usually 587), `ssl` = implicit
+  TLS (usually 465), `none` = unencrypted (25). A mismatch typically hangs until the
+  `timeout` and then fails.
+- **Auth expected but not sent.** If `username` is empty, the app sends **no**
+  credentials at all — a relay that requires auth then rejects the mail. Set
+  `SMTP_USER`/`SMTP_PASS` in `.env` (they're referenced from `config.yaml` as `${ENV}`).
+- **`${SMTP_PASS}` resolves to empty** because the variable isn't in `.env`. The compose
+  file loads `.env` into the containers via `env_file`, so after adding it run
+  `docker compose up -d` — a **running** container keeps its old environment.
+- **Relay restrictions:** many servers only accept a `from_email` belonging to the
+  authenticated account, or only from allowed IPs.
+- Certificate validation is **on** for `tls`/`ssl` — a self-signed SMTP certificate
+  will fail.
+
+The exact reason is logged: `docker compose logs cdrj-web | grep astcdr.notify`
+(test mail) or `... logs cdrj-ingest | grep astcdr.notify` (warnings).
+
+**The test email works, but no warnings come.** Then it's not SMTP:
+- The **checkbox** for that warning type is off on your Account page (all are off by
+  default), or your account has **no email address** (it comes from OIDC or from
+  `auth.local.users[].email` — it can't be edited in the app).
+- **No thresholds configured**: warnings need `cost_warnings` (per trunk) or
+  `contingent_warnings` + `freemin` (per zone) in `costs.yaml`. See [COSTS.md](COSTS.md).
+- **The threshold hasn't been crossed yet**, or it **already fired this month** — each
+  threshold is sent once per calendar month, not on every call.
+- Warnings are only evaluated while the ingest is **caught up** (Sync badge *active*),
+  so a running backfill never replays old threshold crossings as fresh mail.
+- Cost warnings only exist for **outbound, answered** calls on a trunk that has a tariff.
+
+**Admin error mails** (ingest offline, source DB unreachable, bad `costs.yaml`, invalid
+license) additionally require the **Errors and warnings** checkbox on an **admin**
+account — a non-admin ticking it receives nothing. Use `email.admin_alert_to` for
+addresses that should always get them.
+
 ## Can't log in as the local admin
 
 - The **bcrypt hash** must be in `config.yaml` (raw, in quotes), **not** in `.env`.
