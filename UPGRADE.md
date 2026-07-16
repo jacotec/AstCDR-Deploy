@@ -11,6 +11,28 @@ docker compose up -d       # recreate containers with it
 The compose file uses the `:latest` tag by default, so `pull` fetches the newest
 release. Your data (cache, users, settings) is preserved across updates.
 
+### One-time: switch the MariaDB socket mount to the directory
+
+Only relevant if you connect through the **Unix socket** (`source_db.socket` in
+`config.yaml`). Older bundles mounted the socket **file**:
+
+```yaml
+- /var/run/mysqld/mysqld.sock:/var/run/mysqld/mysqld.sock   # old
+```
+
+A file mount binds the inode, so after a MariaDB restart or upgrade the container keeps
+pointing at the deleted socket and the ingest never reconnects (Sync stays *offline*,
+"Connection refused" forever). Change it in your `docker-compose.yml` to the
+**directory**:
+
+```yaml
+- /var/run/mysqld:/var/run/mysqld                            # new
+```
+
+then `docker compose up -d`. From then on a MariaDB restart heals by itself. Don't add
+`:ro` — connecting to a Unix socket needs write permission. Not relevant for TCP
+connections.
+
 ### Pin a fixed version instead of `:latest`
 
 To stay on a specific version (and update only deliberately), set in `.env`:

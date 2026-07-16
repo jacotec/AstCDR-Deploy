@@ -47,6 +47,41 @@ The **Sync** badge reflects the ingest (data pipeline), not your browser.
   `docker compose logs -f cdrj-ingest` (errors?). `docker compose up -d cdrj-ingest`
   restarts it. The badge returns to *active* within a poll or two once it runs again.
 
+## After a MariaDB restart/upgrade the ingest never reconnects
+
+Symptom: your PBX database is back up, `mysql` works fine on the host, but AstCDR
+stays on **Sync: offline** and `docker compose logs cdrj-ingest` repeats
+`Can't connect to MySQL server ... [Errno 111] Connection refused` forever.
+
+Cause: you're connecting through the **Unix socket** and the compose file mounts the
+socket **file**:
+
+```yaml
+- /var/run/mysqld/mysqld.sock:/var/run/mysqld/mysqld.sock   # ← the problem
+```
+
+A file bind-mount binds the **inode**, not the path. When MariaDB restarts it deletes
+and recreates its socket — a **new inode**. The container keeps pointing at the old,
+dead one. (That's why it's "connection refused" and not "file not found": from inside
+the container the socket still exists, nothing is listening on it.) This never heals on
+its own.
+
+**Fix it now:**
+```bash
+docker compose up -d --force-recreate cdrj-ingest
+```
+
+**Fix it for good** — mount the **directory** instead (current bundles already do):
+```yaml
+- /var/run/mysqld:/var/run/mysqld
+```
+Then a freshly created socket inside that directory is visible to the container and the
+ingest reconnects on its own within a poll cycle. Don't add `:ro` — connecting to a Unix
+socket needs write permission. Apply with `docker compose up -d`.
+
+> Not affected if you connect over **TCP** (`source_db.host`/`port` instead of
+> `socket`) — there's no socket file in play.
+
 ## No warning emails arrive
 
 Always start with the **Send test email** button on your **Account** page (click your
