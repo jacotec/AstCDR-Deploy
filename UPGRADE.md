@@ -31,11 +31,12 @@ port bypassed the FreePBX firewall entirely. Host mode fixes both.
    ```
    (Plain `host: "127.0.0.1"` works too. If you leave `cdrj-postgres`, web and ingest
    can't find the cache and won't start.)
-3. **Open the web port in the FreePBX firewall.** It is now a normal host port and is
-   therefore — correctly — governed by the firewall:
+3. **Check the firewall.** The web port is now a normal host port and is therefore —
+   correctly — governed by the FreePBX firewall (a published Docker port used to bypass
+   it). If your reverse proxy's network sits in the **Trusted** zone, it already has
+   full access and there is **nothing to do**. From any other zone, add it:
    *Firewall → Custom Services → Create new Service*, protocol **TCP**, single port
-   **3000** (or your `WEB_PORT`), zone **Local**. Without this your reverse proxy can no
-   longer reach it.
+   **3000** (or your `WEB_PORT`), zone **Local**.
 4. `docker compose up -d`
 
 Nothing else changes: same image, same `.env`, same data. Your cache, users and

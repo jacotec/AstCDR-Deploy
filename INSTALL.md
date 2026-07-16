@@ -90,22 +90,27 @@ The minimum you must set (full reference: **[CONFIGURATION.md](CONFIGURATION.md)
 - **`trunks.known` / `trunks.labels`** — your trunk names, so the trunk column
   shows friendly labels.
 
-## 5. Open the web port in the FreePBX firewall
+## 5. Make the web port reachable (FreePBX firewall)
 
-AstCDR runs with **host networking**, so `WEB_PORT` is an ordinary port on the PBX —
-and the FreePBX firewall governs it. **Without this step nothing reaches the UI.**
+AstCDR runs with **host networking**, so `WEB_PORT` is an ordinary port on the PBX and
+the FreePBX firewall governs it — unlike a *published* Docker port, which bypasses the
+firewall completely.
 
-> **Firewall → Custom Services → Create new Service**
-> Name `AstCDR`, protocol **TCP**, single port **3000** (your `WEB_PORT`), zone **Local**
+**It depends on where your client comes from** (your reverse proxy, or your browser):
 
-Pick the zone that fits: **Local** for a reverse proxy in your LAN. This is the **only**
-inbound port AstCDR ever needs — the Postgres cache listens on `127.0.0.1` only, and the
-ingest worker listens on nothing at all.
+- Its network is in the **Trusted** zone (*Firewall → Networks*)? → **Nothing to do.**
+  Trusted has full access to every port.
+- Any other zone? → add a rule:
+  > *Firewall → Custom Services → Create new Service*
+  > Name `AstCDR`, protocol **TCP**, single port **3000** (your `WEB_PORT`), zone
+  > **Local** (for a reverse proxy in your LAN)
 
-Why the firewall matters here: with the classic published-port setup, Docker DNATs the
-port and it stays reachable **regardless** of your firewall zones. Host mode puts that
-back under the firewall's control. (Skip this step only if you use
-`docker-compose.isolated.yml` — see [CONFIGURATION.md](CONFIGURATION.md).)
+This is the **only** inbound port AstCDR ever needs — the Postgres cache listens on
+`127.0.0.1` only, and the ingest worker listens on nothing at all.
+
+> Not relevant if you use `docker-compose.isolated.yml`: a published port is DNAT'd and
+> reachable regardless of the firewall — put something in front of it yourself. See
+> [CONFIGURATION.md](CONFIGURATION.md).
 
 ## 6. Start
 

@@ -88,7 +88,9 @@ the right choice when AstCDR runs **on the FreePBX itself**, which is the normal
   DNAT'd and bypasses the firewall completely — it stays reachable no matter what your
   zones say. In host mode it's an ordinary port and the firewall applies.
 
-So after installing, open the port there — otherwise nothing reaches the UI:
+Which means the firewall now decides who reaches the UI. Clients whose network is in the
+**Trusted** zone already have full access to every port — nothing to do. From any other
+zone, assign the port:
 
 > **Firewall → Custom Services → Create new Service**
 > Name `AstCDR`, protocol **TCP**, single port **3000** (your `WEB_PORT`), zone **Local**
