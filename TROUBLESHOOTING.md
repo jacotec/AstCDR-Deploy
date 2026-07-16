@@ -47,6 +47,46 @@ The **Sync** badge reflects the ingest (data pipeline), not your browser.
   `docker compose logs -f cdrj-ingest` (errors?). `docker compose up -d cdrj-ingest`
   restarts it. The badge returns to *active* within a poll or two once it runs again.
 
+## After a PBX update, containers can't reach anything (build fails, no OIDC, no emails)
+
+Symptom: the host is perfectly fine (`ping`, `nslookup`, `git pull` all work), but
+**inside** a container nothing gets out. Typical signs, in any combination:
+
+- a rebuild dies on `Temporary failure resolving 'deb.debian.org'`,
+- **OIDC login** stops working,
+- **warning emails** stop arriving,
+- while the journal itself keeps working normally.
+
+That last part is the giveaway: Postgres runs on the compose network and the PBX
+database goes through the Unix socket — neither needs the outside world. Only OIDC,
+SMTP and image builds do.
+
+**Check it** (an IP address, so DNS is not involved):
+
+```bash
+docker run --rm alpine ping -c1 1.1.1.1     # 100% packet loss?
+iptables -S FORWARD | head                   # only "-P FORWARD DROP" and nothing else?
+```
+
+If Docker's chains (`DOCKER-USER`, `DOCKER-ISOLATION-STAGE-1`, …) are missing from
+`FORWARD`, that's it.
+
+**Cause:** on a PBX, Docker is not the only thing managing iptables — the FreePBX
+firewall (or firewalld) manages the same tables. Docker installs its rules **once, when
+the daemon starts**, and never re-checks them. Anything that rewrites the tables
+afterwards — a system update, a firewall reload, restarting the firewall module — takes
+Docker's chains with it. With `-P FORWARD DROP` and no Docker chains, every container
+packet is dropped, silently.
+
+**Fix:**
+```bash
+sudo systemctl restart docker
+```
+Docker rebuilds its chains. Verify with the same `ping` — it must answer.
+
+> Rule of thumb: **after a bigger PBX update or a firewall reload, restart Docker.**
+> Order matters — Docker has to come up *after* the firewall.
+
 ## After a MariaDB restart/upgrade the ingest never reconnects
 
 Symptom: your PBX database is back up, `mysql` works fine on the host, but AstCDR
@@ -108,6 +148,12 @@ missing → the whole section stays hidden.
 
 The exact reason is logged: `docker compose logs cdrj-web | grep astcdr.notify`
 (test mail) or `... logs cdrj-ingest | grep astcdr.notify` (warnings).
+
+> **If email used to work and suddenly stopped after a PBX update**, don't hunt the mail
+> server first — check that containers can reach the network at all:
+> `docker run --rm alpine ping -c1 1.1.1.1`. A firewall reload can wipe Docker's
+> iptables rules and cut SMTP off silently. See
+> [above](#after-a-pbx-update-containers-cant-reach-anything-build-fails-no-oidc-no-emails).
 
 **The test email works, but no warnings come.** Then it's not SMTP:
 - The **checkbox** for that warning type is off on your Account page (all are off by
