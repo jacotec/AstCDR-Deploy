@@ -72,11 +72,23 @@ If Docker's chains (`DOCKER-USER`, `DOCKER-ISOLATION-STAGE-1`, …) are missing 
 `FORWARD`, that's it.
 
 **Cause:** on a PBX, Docker is not the only thing managing iptables — the FreePBX
-firewall (or firewalld) manages the same tables. Docker installs its rules **once, when
-the daemon starts**, and never re-checks them. Anything that rewrites the tables
-afterwards — a system update, a firewall reload, restarting the firewall module — takes
-Docker's chains with it. With `-P FORWARD DROP` and no Docker chains, every container
+firewall manages the same tables. Docker installs its rules **once, when the daemon
+starts**, and never re-checks them. When the FreePBX firewall restarts, it rewrites the
+tables from scratch and takes Docker's chains with it. Docker also sets
+`-P FORWARD DROP` and then relies on *its own* rules to let container traffic back
+through — so once those rules are gone, the blanket DROP remains and every container
 packet is dropped, silently.
+
+**The trigger is `fwconsole restart`** (it stops and starts the firewall module), not the
+update itself. Measured on a live PBX through a full update cycle:
+
+| after | container network | Docker rules in FORWARD |
+|-------|-------------------|-------------------------|
+| `apt upgrade` | **works** | intact |
+| `fwconsole restart` | **dead** | **gone** |
+| `systemctl restart docker` | works | restored |
+
+So a plain package upgrade is harmless — it's restarting the firewall that does it.
 
 **Fix:**
 ```bash
@@ -84,8 +96,10 @@ sudo systemctl restart docker
 ```
 Docker rebuilds its chains. Verify with the same `ping` — it must answer.
 
-> Rule of thumb: **after a bigger PBX update or a firewall reload, restart Docker.**
-> Order matters — Docker has to come up *after* the firewall.
+> Rule of thumb: **after every `fwconsole restart` (or anything else that restarts the
+> FreePBX firewall), restart Docker.** Order matters — Docker has to come up *after* the
+> firewall. Restarting Docker does **not** harm the firewall's own rules: Docker only
+> adds its chains, it never flushes the tables.
 
 ## After a MariaDB restart/upgrade the ingest never reconnects
 
