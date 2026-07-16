@@ -57,11 +57,11 @@ services:
       - ./license:/app/license:ro   # license folder (empty = free version)
       # FreePBX MariaDB socket (same host). Adjust the path if needed; only
       # required when source_db.socket is set in config.yaml.
-      # Das VERZEICHNIS mounten, NICHT die Socket-Datei: ein Datei-Bind-Mount bindet
-      # den INODE. Nach einem MariaDB-Restart/-Upgrade legt der Server einen NEUEN
-      # Socket an — der Container zeigt dann für immer auf den alten, toten (Errno 111
-      # "Connection refused", heilt nie von selbst). Kein :ro — der Connect auf einen
-      # Unix-Socket braucht Schreibrecht.
+      # Mount the DIRECTORY, not the socket file: a file bind-mount binds the INODE.
+      # After a MariaDB restart/upgrade the server creates a NEW socket, and the
+      # container would keep pointing at the old, dead one (Errno 111 "Connection
+      # refused", never heals by itself). No :ro — connecting to a Unix socket
+      # requires write permission.
       - /var/run/mysqld:/var/run/mysqld
     depends_on:
       cdrj-postgres:
