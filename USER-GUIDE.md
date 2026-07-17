@@ -17,7 +17,7 @@ identical in every view**, and your current filter (date range, trunks, search �
 **carries over** when you switch — filter once, look at it three ways:
 
 - **List** — the call journal (this guide's main subject).
-- **Costs** — the [cost analysis](#cost-analysis) of your outbound calls.
+- **Costs** — the [cost analysis](#cost-analysis) of your billed calls.
 - **Statistics** — [call statistics](#statistics): volume, heatmap, queues, per
   extension and more.
 
@@ -61,7 +61,7 @@ appears only when call costs are configured):
 | **Missed** | Inbound calls that were not answered (voicemail does **not** count as missed). |
 | **Avg. ring time** | Average time until answer. |
 | **Avg. talk time** | Average conversation length. |
-| **Cost** | Total estimated cost of the outbound calls in the selection. Only shown when a tariff file is configured — see [COSTS.md](COSTS.md). |
+| **Cost** | Total estimated cost of the billed outbound legs in the selection (incl. calls forwarded out to an external number). Only shown when a tariff file is configured — see [COSTS.md](COSTS.md). |
 
 ---
 
@@ -163,7 +163,7 @@ Each row is one logical call (all its legs folded together).
 | **Talk** | Conversation length. |
 | **Hung up** | Who ended the call (caller or an internal party). |
 | **Rec** | A red dot if a recording exists for the call. |
-| **Cost / Real cost / Zone / Quota** | Estimated cost of an **outbound** call, if a tariff file is configured — see [COSTS.md](COSTS.md). *Real cost* applies free minutes; *Quota* is the free minutes left this month. |
+| **Cost / Real cost / Zone / Quota** | Estimated cost of the call's billed **outbound leg(s)** — a normal outbound call, or an inbound call forwarded out to an external number — if a tariff file is configured (see [COSTS.md](COSTS.md)). *Real cost* applies free minutes; *Quota* is the free minutes left this month. |
 
 Not every column is shown by default — see [Choosing columns](#choosing-columns).
 
@@ -203,7 +203,9 @@ Click any row to expand it. The detail view shows:
   caller waits on hold) between the caller's legs — so the timing adds up. A transfer to
   a **dialplan destination** (e.g. a Custom Destination that just
   plays an announcement, rather than another extension) shows a **↪ forwarded-to** step
-  with the destination it was sent to.
+  with the destination it was sent to. Any step that goes **out over a trunk** (a normal
+  outbound call, or a leg forwarded to an external number) is tagged **“over &lt;trunk&gt;”**,
+  so you can see which trunk carried it — which is also the trunk its cost lands on.
 
 Click the row again to collapse it. Open rows stay open while the journal
 auto-refreshes.
@@ -261,15 +263,17 @@ At the bottom: the total number of matching calls, a **per page** selector
 
 ## Cost analysis
 
-The **Costs** view breaks down the cost of your **outbound** calls for the current
-filter. Only answered outbound calls incur cost, so this view is outbound-only, and
-any direction filter set elsewhere is ignored here. It needs a tariff file — see
+The **Costs** view breaks down your call costs for the current filter, by **trunk →
+zone → extension**. It follows the billed **outbound legs**, so it also covers inbound
+calls that were **forwarded out** to an external number (FollowMe/transfer) — each leg
+counts on the trunk it actually left over, and on the extension responsible for it
+(the one that dialled, or whose forward sent it out). It needs a tariff file — see
 [COSTS.md](COSTS.md).
 
 ### Key figures
 A row of totals for the current filter: **Cost** (gross), **Real cost** (after free
-minutes), **Savings** (what the free minutes saved you), **Outbound talk time**, and
-the **number of outbound calls**.
+minutes), **Savings** (what the free minutes saved you), **Billed time**, and the
+**number of billed legs**.
 
 ### Charts
 Three charts: **Cost by month** spans the full width on its own row, with **Real cost
@@ -294,8 +298,8 @@ A list you expand in three levels:
   call last.
 
 Each zone and extension row has a **Details** link that jumps to the **List** view
-filtered to exactly those calls (that trunk/zone, outbound, answered only). The
-active zone filter appears there as a removable **"Zone: …"** pill above the list.
+filtered to that trunk/zone. The active zone filter appears there as a removable
+**"Zone: …"** pill above the list.
 
 ### Export
 The **printer** button exports the breakdown for the current filter:

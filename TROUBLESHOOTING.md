@@ -182,7 +182,8 @@ The exact reason is logged: `docker compose logs cdrj-web | grep astcdr.notify`
   threshold is sent once per calendar month, not on every call.
 - Warnings are only evaluated while the ingest is **caught up** (Sync badge *active*),
   so a running backfill never replays old threshold crossings as fresh mail.
-- Cost warnings only exist for **outbound, answered** calls on a trunk that has a tariff.
+- Cost warnings only exist for **billed outbound legs** (a normal outbound call, or a
+  call forwarded out to an external number) on a trunk that has a tariff.
 
 **Admin error mails** (ingest offline, source DB unreachable, bad `costs.yaml`, invalid
 license) additionally require the **Errors and warnings** checkbox on an **admin**

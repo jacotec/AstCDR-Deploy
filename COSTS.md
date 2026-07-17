@@ -1,13 +1,20 @@
 # Call costs (outbound)
 
-AstCDR can estimate the cost of your **outbound** calls from a tariff file you
-provide, and show it as journal columns, in the call detail, and as a **Cost** KPI.
-It's an estimate based on the call's billed seconds, the dialed number and the
-trunk — no external lookups.
+AstCDR can estimate the cost of your calls from a tariff file you provide, and show
+it as journal columns, in the call detail, and as a **Cost** KPI. It's an estimate
+based on the billed seconds, the dialed number and the trunk — no external lookups.
 
-- Only **outbound** calls get costs. Inbound, internal and system events stay empty.
-- A call over a trunk that isn't in the tariff file stays empty too (perfectly fine
-  — e.g. a free internal site-to-site trunk).
+- Cost follows the **outbound leg** — the part that actually goes out over a trunk and
+  gets billed by your provider. That's a normal outbound call, **and** an inbound call
+  that is **forwarded out to an external number** (FollowMe, transfer, or divert): the
+  forwarded leg is billed even though the call shows as *inbound* in the main row.
+- The outbound leg may leave over a **different trunk** than an inbound call arrived on
+  (outbound routes decide). Cost, zone and free minutes are attributed to that **outbound**
+  trunk; the call detail shows it as **“over &lt;trunk&gt;”** on the forwarded leg.
+- A call can have **several** outbound legs (e.g. forwarded to two numbers). The row's
+  cost is the **sum**; each leg is billed on its own trunk and zone.
+- Purely inbound, internal and system events stay empty. A call over a trunk that isn't
+  in the tariff file stays empty too (e.g. a free internal site-to-site trunk).
 
 ## Enabling it
 
@@ -306,9 +313,10 @@ show:
 Money is formatted per your interface language (e.g. `0,04 €` in German, Spanish and
 French, `€0.04` in English).
 
-> **Unanswered outbound calls cost nothing** and carry no zone — only *answered*
-> outbound calls are billed. (If you upgraded from an early build, run a one-time
-> **cache rebuild** so older unanswered calls drop their leftover zone tag.)
+> **Unconnected legs cost nothing** and carry no zone — only a leg that actually
+> connected (billed seconds &gt; 0) is charged. After upgrading, run a one-time
+> **cache rebuild** so existing forwarded calls pick up their leg costs (older calls
+> get them only on re-ingest; new calls immediately).
 
 ## Checking your tariff file
 
