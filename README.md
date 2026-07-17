@@ -65,8 +65,9 @@ on start.
   tells you whether the pipeline is live, catching up, or stopped.
 
 **Look**
-- Four languages (EN/DE/ES/FR), light/dark, responsive down to phone width — and your
-  own **logo and app icon**.
+- Four languages (EN/DE/ES/FR) — by default each user simply gets their **browser's**
+  language. Light/dark, responsive down to phone width — and your own **logo and app
+  icon**.
 
 **How it reads your PBX**
 - **Strictly read-only** on the FreePBX database (`SELECT` only, through its own

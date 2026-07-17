@@ -4,8 +4,9 @@ How to read and work with the call journal. This is the day-to-day guide for
 everyone using AstCDR; installation and configuration are covered separately
 ([INSTALL.md](INSTALL.md), [CONFIGURATION.md](CONFIGURATION.md)).
 
-You can switch the interface between **English, German, Spanish and French** with
-the language menu in the header; this guide uses the English labels.
+Out of the box the interface follows **your browser's language**; you can pin it to
+**English, German, Spanish or French** with the language menu in the header. This
+guide uses the English labels.
 
 ---
 
@@ -37,8 +38,9 @@ identical in every view**, and your current filter (date range, trunks, search �
     incomplete while this runs.
   - 🔴 **Sync offline** — the ingest hasn't reported in for a while; **the data may be
     stale**. See [Troubleshooting](TROUBLESHOOTING.md).
-- **Language** (globe) — a menu to pick the interface language: English, German,
-  Spanish or French (remembered per user).
+- **Language** (globe) — a menu to pick the interface language: **Browser** (the
+  default — follows your browser's `Accept-Language`, falling back to English),
+  English, German, Spanish or French. Remembered per user.
 - **Theme** (moon/sun) — dark / light / follow the OS.
 - **Fullscreen** — hides the header, KPIs and filters to show as many rows as
   possible; a floating button brings them back.
