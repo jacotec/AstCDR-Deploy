@@ -26,7 +26,9 @@ identical in every view**, and your current filter (date range, trunks, search �
 ## The header
 
 - **Live** — the auto-refresh toggle. When on (green dot), the journal updates
-  itself every few seconds, no reload needed. **Click it to pause**: the dot turns
+  itself every few seconds, no reload needed: rows, the KPI cards and the page
+  navigator all follow along, so when a new call adds a page you can go straight
+  to it. **Click it to pause**: the dot turns
   into a yellow **pause** sign labelled *Paused* and the list freezes on the current
   view — handy when new calls keep pushing the rows down while you read. Click again
   to resume.
