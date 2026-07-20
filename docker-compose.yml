@@ -32,6 +32,10 @@ services:
       POSTGRES_DB: cdrjournal
       POSTGRES_USER: cdrjournal
       POSTGRES_PASSWORD: ${CACHE_DB_PASSWORD}
+      # Container logs and manual `psql` in local time instead of UTC (a container
+      # does NOT inherit the host timezone). Keep this in sync with `app.timezone`
+      # in config.yaml — the web/ingest containers derive theirs from there.
+      TZ: ${TZ:-Europe/Berlin}
     # Loopback ONLY: the cache is for our own containers. Without this, host mode
     # would expose Postgres on the LAN. Change the port via .env if 5432 is taken.
     command: ["postgres", "-c", "listen_addresses=127.0.0.1",

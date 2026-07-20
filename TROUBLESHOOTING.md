@@ -231,8 +231,16 @@ Usually a cookie/TLS mismatch.
 
 ## Wrong times / dates
 
-Set `app.timezone` to your IANA zone (e.g. `Europe/Berlin`). It affects both
-display and how the date filters interpret day boundaries.
+Set `app.timezone` to your IANA zone (e.g. `Europe/Berlin`). It affects the display,
+how the date filters interpret day boundaries, **and the timestamps in the container
+logs** (`docker compose logs`).
+
+> **Careful when querying the cache database by hand.** A container does *not*
+> inherit the host timezone. The app connects with `app.timezone`, but a manual
+> `psql` session uses the container's zone — so a `WHERE start_ts >= '… 10:15'`
+> can silently be off by your UTC offset and return nothing. Either set `TZ` for
+> the Postgres container (see `.env.example`) or start the query with
+> `SET TIME ZONE 'Europe/Berlin';`.
 
 ## Trunk column is empty or shows raw names
 

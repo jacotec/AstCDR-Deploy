@@ -24,7 +24,7 @@ app:
 |-----|---------|
 | `base_url` | **Required.** Public URL where users reach AstCDR. Also the base for the OIDC callback (`{base_url}/auth/callback`). Must match what the reverse proxy serves. |
 | `secret_key` | Signs session cookies. Generate once: `openssl rand -hex 32`. Changing it logs everyone out. |
-| `timezone` | IANA name. Controls how timestamps are displayed and how day boundaries for date filters are interpreted. |
+| `timezone` | IANA name. Controls how timestamps are displayed, how day boundaries for date filters are interpreted, and the timestamps in the container logs (a container does not inherit the host timezone — without this they would be UTC). |
 | `session_lifetime_minutes` | `0` = no timeout (until logout / browser close). `>0` = auto-logout after N minutes of session age. |
 | `cookie_secure` | Omit in production: `Secure` cookies are automatic when `base_url` is `https`. Set `false` **only** for a direct HTTP test without a TLS proxy. |
 
