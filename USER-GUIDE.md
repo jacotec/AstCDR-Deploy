@@ -173,6 +173,10 @@ Small badges next to the status show special handling:
 - **Follow Me** — it was routed by a Follow-Me rule.
 - **↪ transferred** — the call was transferred.
 - **parked** — the call was parked.
+- **PU picked up** — somebody answered the call from *another* phone (call pickup,
+  usually dialled as `**<extension>`). The call detail names the extension it was
+  picked up **for**, and that extension is listed under *Involved* — so the call still
+  shows up when you filter for the person whose phone actually rang.
 
 ### Sorting
 Click a **column header** to sort by it. Click again to flip between ascending and
