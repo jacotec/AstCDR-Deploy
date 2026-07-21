@@ -238,10 +238,13 @@ exactly what your filter shows (all matches, in the current sort order).
   and semicolon-separated, so Excel (incl. German locale) opens it cleanly. Durations
   are in seconds, timestamps in ISO form, costs as plain numbers — ready for pivots.
 - **PDF** — a real, downloadable PDF in A4 portrait. It prints the columns you
-  currently see (the **All columns** checkbox is respected). Tick **Include call
-  details** to expand every call with its full timeline (transfers, parking,
-  conference, voicemail, cost breakdown). Each call is a self-contained card that
-  never breaks across a page; every page carries your logo, the app title, the
+  currently see (the **All columns** checkbox is respected). Each card's header line
+  also carries a **Flags** entry naming the status badges of that call (queue,
+  Follow Me, transferred, parked, picked up) — so they're in the print even without
+  the details. Tick **Include call details** to expand every call with its full
+  timeline (transfers, parking, conference, voicemail, IVR and announcement steps,
+  consultations, forwards, and the cost breakdown). Each call is a self-contained card
+  that never breaks across a page; every page carries your logo, the app title, the
   **active filters in plain text**, and a **Page x/y** footer.
   - If costs are configured, the PDF opens with a **cost overview** right under the
     filter line: **Cost** and **Real cost** per trunk (only trunks that carry costs in
