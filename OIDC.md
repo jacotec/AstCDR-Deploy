@@ -63,9 +63,9 @@ That's why step 2 matters: `sub` is *not* stable across IdPs. If you **switch pr
 without the email match they land in a fresh account — the suffixed one — leaving their
 saved filters, columns and email preferences behind on the old account.
 
-> **authentik does not send `email_verified`** — deliberately, because it hasn't
-> verified the address. Keycloak has a per-user switch for it. So on authentik, step 2
-> never fires and a provider switch produces duplicates.
+> **authentik sends `email_verified: false`** — deliberately, because it never verified
+> the address itself, and it has no switch to declare it verified (Keycloak does, per
+> user). So on authentik step 2 never fires, and a provider switch produces duplicates.
 
 Set **`link_by_unverified_email: true`** to allow step 2 without the claim. It is off by
 default for a reason: if your IdP lets people **self-register**, someone could sign up
