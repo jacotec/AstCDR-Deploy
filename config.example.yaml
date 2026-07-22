@@ -59,6 +59,13 @@ auth:
     groups_claim: "groups"
     admin_groups: ["admin"]             # members of these groups become admins
     button_label: "Authentik"           # text on the login button
+    # Link an OIDC login to an EXISTING account by email even when the IdP sends no
+    # `email_verified` claim (authentik never does). Off by default: with an IdP that
+    # allows self-registration, someone could sign up with a colleague's address and
+    # take over their account on first login. Turn it on only when addresses are
+    # assigned administratively — e.g. temporarily while migrating to another IdP, so
+    # existing users keep their accounts and settings instead of getting a duplicate.
+    link_by_unverified_email: false
     # WHO is allowed to sign in is controlled in the IdP (client assignment) — not here.
   local:
     enabled: true                       # break-glass local login

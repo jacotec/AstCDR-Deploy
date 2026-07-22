@@ -47,9 +47,34 @@ auth:
 | `groups_claim` | Which claim carries group membership. |
 | `admin_groups` | Users in any of these groups get the **admin** role; everyone else is a normal user. |
 | `button_label` | Text on the login button. |
+| `link_by_unverified_email` | Link to an existing account by email even without an `email_verified` claim. Off by default — see [Account linking](#account-linking). |
 
-The **email** from the token links an OIDC user to a local user with the same
-email (same identity, same saved preferences).
+## Account linking
+
+An OIDC login is matched to an existing account in this order:
+
+1. by the IdP's **`sub`** (stable per user *and* per IdP),
+2. by **email** — but only if the IdP asserts `email_verified`,
+3. otherwise a **new account** is created. If the username is already taken, it gets a
+   short suffix (`marco#5dd4c35a`) so the two accounts stay apart.
+
+That's why step 2 matters: `sub` is *not* stable across IdPs. If you **switch provider**
+(or move from local logins to OIDC), every user arrives with a brand-new `sub`, and
+without the email match they land in a fresh account — the suffixed one — leaving their
+saved filters, columns and email preferences behind on the old account.
+
+> **authentik does not send `email_verified`** — deliberately, because it hasn't
+> verified the address. Keycloak has a per-user switch for it. So on authentik, step 2
+> never fires and a provider switch produces duplicates.
+
+Set **`link_by_unverified_email: true`** to allow step 2 without the claim. It is off by
+default for a reason: if your IdP lets people **self-register**, someone could sign up
+with a colleague's address and take over that account on first login. Only enable it
+when addresses are assigned administratively.
+
+**Recommended for a migration:** switch it on, let everyone log in once (they keep their
+accounts and settings), then switch it off again. New users are unaffected either way —
+they have no existing account to link to.
 
 ## Discovery URL (`server_metadata_url`)
 
