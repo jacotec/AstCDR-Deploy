@@ -119,7 +119,8 @@ search as **AND**.
 - **Missed only** — unanswered inbound calls.
 - **External only** — calls that involve an external party (via a trunk).
 - **Ignored / show hidden** — reveals events normally hidden (door/paging etc.,
-  configured under `journal.hide`).
+  configured under `journal.hide`, plus the bare feature-code dial when someone
+  **picks up** a call — the real call is shown separately with its **PU** flag).
 
 ### Extensions dropdown
 Pick one or more internal extensions to see only calls that involve them (combined
