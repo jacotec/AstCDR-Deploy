@@ -197,8 +197,10 @@ Click any row to expand it. The detail view shows:
 
 - **Meta line:** trunk, "Via" number, Follow-Me target, queues, park slot, total
   duration, and the recording marker if present.
-- **System / Context:** the announcement/cause and (for admins) the dialplan
-  context.
+- **Termination cause:** why the call ended, in plain language, whenever it's something
+  other than a normal hang-up — e.g. *Number not in service*, *User busy*, *Call
+  rejected* (from the carrier's ITU-T Q.850 cause). Admins also see the raw cause number.
+- **System / Context:** the played announcement and (for admins) the dialplan context.
 - **Conversation timeline:** the call's segments in order — bridges (↔ between two
   parties), announcements (📢, the played prompt), IVR menu steps (🎛, which menu, the
   prompt, and the key the caller pressed), park (⏸), conferences, and voicemail (✉) —
