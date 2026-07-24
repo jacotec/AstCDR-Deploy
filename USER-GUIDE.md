@@ -199,7 +199,9 @@ Click any row to expand it. The detail view shows:
   duration, and the recording marker if present.
 - **Termination cause:** why the call ended, in plain language, whenever it's something
   other than a normal hang-up — e.g. *Number not in service*, *User busy*, *Call
-  rejected* (from the carrier's ITU-T Q.850 cause). Admins also see the raw cause number.
+  rejected* (from the carrier's ITU-T Q.850 cause). If the caller hung up while dialling,
+  before the other side answered, it reads *Cancelled by caller* — the raw carrier cause
+  is unreliable in that moment and would only mislead. Admins also see the raw cause number.
 - **System / Context:** the played announcement and (for admins) the dialplan context.
 - **Conversation timeline:** the call's segments in order — bridges (↔ between two
   parties), announcements (📢, the played prompt), IVR menu steps (🎛, which menu, the
