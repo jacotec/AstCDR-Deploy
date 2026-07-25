@@ -156,7 +156,7 @@ Each row is one logical call (all its legs folded together).
 | **Direction** | inbound / outbound / internal (with an icon; missed inbound is marked). |
 | **Status** | Answered / Missed / No answer / Voicemail / System, plus flags (see below). |
 | **From · No. / Name / Location** | Caller number, name, and country/city for external numbers. |
-| **To · No. / Name / Location** | Callee number, name, location. |
+| **To · No. / Name / Location** | Callee number, name, location. For a **missed** inbound call this shows the extension that was rung — the single extension for a direct call, or the originally dialled extension for a Follow-Me. A **queue** call is left empty here (several extensions ring at once, so no single "To"). |
 | **Trunk** | The provider trunk the call went over — the column commercial CTI leaves empty. |
 | **Via** | The number the call came in on / went out through, when relevant. |
 | **Involved** | The internal extensions that took part. |
