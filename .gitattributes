@@ -1,0 +1,27 @@
+# Make line endings reproducible, regardless of the machine's core.autocrlf.
+# Without this, a Windows clone with the default `autocrlf=true` checks out the
+# shell scripts as CRLF and commits them that way — which then fails inside the
+# Linux containers with `/bin/sh^M: bad interpreter`. So: always LF in the repo.
+
+# Default: detect text automatically, force LF in the working tree and repo.
+* text=auto eol=lf
+
+# Critical: runs on Linux / in the containers -> LF is mandatory.
+*.sh   text eol=lf
+*.yaml text eol=lf
+*.yml  text eol=lf
+*.md   text eol=lf
+
+# Windows batch would need CRLF (none tracked today, kept for completeness).
+*.bat  text eol=crlf
+*.cmd  text eol=crlf
+
+# Binary: never touch line endings (none tracked today; defensive).
+*.png  binary
+*.jpg  binary
+*.jpeg binary
+*.gif  binary
+*.ico  binary
+*.pdf  binary
+*.zip  binary
+*.gz   binary
