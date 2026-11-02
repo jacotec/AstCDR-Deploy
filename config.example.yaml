@@ -122,6 +122,15 @@ email:                                  # optional: SMTP for cost/quota/admin wa
   admin_alert_to: []                    # extra recipients for ADMIN error mails only
                                         # (independent of the per-user checkboxes)
 
+ami:                                    # optional: codec & media capture (Asterisk Manager Interface)
+  enabled: false                        # on only with host + username + password set
+  host: "127.0.0.1"                     # FreePBX itself (host mode); isolated compose: PBX address
+  port: 5038
+  username: "astcdr"                    # AMI user from FreePBX: Settings -> Asterisk Manager Users
+  password: "${AMI_PASSWORD}"           # via ${ENV}; never written to config.yaml
+  # resample_delay_s: 2                 # 2nd sample after a bridge forms (transcoding settles)
+  # ping_interval_s: 30                 # keepalive; no answer -> reconnect
+
 ui:
   brand_title: "Call Journal"
   page_size: 100

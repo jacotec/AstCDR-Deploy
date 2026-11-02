@@ -26,6 +26,12 @@ on start.
   the caller sits on hold.
 - Ring and talk time per step, so the numbers add up.
 
+**Codecs & media** (optional)
+- Per call: the **codec** of every leg, a **⚠ transcoding** marker, **HD** voice, whether
+  media (**SRTP**) and signaling (**TLS**) were encrypted, and the media path — read live
+  from the Asterisk Manager Interface, no dialplan changes.
+- Admins get the **SIP Call-ID** with a copy button, to look the call up in a SIP tracer.
+
 **Filtering & search**
 - Date range, extension, direction, "missed only" — plus a search field with field
   operators, `AND`/`OR`/`NOT` and parentheses.
@@ -71,7 +77,7 @@ on start.
 
 **How it reads your PBX**
 - **Strictly read-only** on the FreePBX database (`SELECT` only, through its own
-  read-only user). Everything is folded into a separate Postgres cache; rebuilding that
+  read-only user) — and on the optional AMI connection (`Getvar` only, no call control). Everything is folded into a separate Postgres cache; rebuilding that
   cache never touches your PBX data and keeps users and settings.
 
 ## Demo
@@ -144,7 +150,7 @@ Then open your `base_url` in a browser and log in. Full details: **[INSTALL.md](
 
 | File | Purpose |
 |------|---------|
-| `docker-compose.yml` | The three containers (web, ingest, postgres), prebuilt images, host networking |
+| `docker-compose.yml` | The containers (web, ingest, postgres, optional codec capture), prebuilt images, host networking |
 | `docker-compose.isolated.yml` | Optional alternative: classic bridge network — only if AstCDR runs on a *different* host than the PBX ([CONFIGURATION.md](CONFIGURATION.md)) |
 | `.env.example` | Secrets & ports — copy to `.env` and fill in |
 | `config.example.yaml` | Instance configuration — copy to `config.yaml` |

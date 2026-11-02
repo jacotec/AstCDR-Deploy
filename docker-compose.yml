@@ -90,5 +90,21 @@ services:
       cdrj-postgres:
         condition: service_healthy
 
+  # Codec & media capture via the Asterisk Manager Interface (optional). Without a
+  # configured `ami:` block in config.yaml this container just idles — AstCDR then
+  # behaves exactly as without the feature. Host mode: reaches the FreePBX AMI on
+  # 127.0.0.1:5038. See CONFIGURATION.md -> `ami`.
+  cdrj-ami:
+    image: ${CDRJ_IMAGE:-ghcr.io/jacotec/astcdr:latest}
+    restart: unless-stopped
+    network_mode: host
+    command: ["python", "-m", "app.ami.listener"]
+    env_file: [.env]
+    volumes:
+      - ./config.yaml:/app/config.yaml:ro
+    depends_on:
+      cdrj-postgres:
+        condition: service_healthy
+
 volumes:
   pgdata: {}

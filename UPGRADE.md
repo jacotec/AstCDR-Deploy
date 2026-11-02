@@ -70,6 +70,15 @@ then `docker compose up -d`. From then on a MariaDB restart heals by itself. Don
 `:ro` — connecting to a Unix socket needs write permission. Not relevant for TCP
 connections.
 
+### Optional: the codec capture container (`cdrj-ami`)
+
+Newer bundles contain a fourth service, `cdrj-ami`, for the optional codec & media
+capture. Your existing `docker-compose.yml` keeps working without it. To use the
+feature, take the new `docker-compose.yml` from the bundle (or copy the `cdrj-ami`
+service into yours), then follow
+[CONFIGURATION.md → `ami`](CONFIGURATION.md#ami--codec--media-capture-optional). Without a
+configured `ami` block the container just idles.
+
 ### Pin a fixed version instead of `:latest`
 
 To stay on a specific version (and update only deliberately), set in `.env`:

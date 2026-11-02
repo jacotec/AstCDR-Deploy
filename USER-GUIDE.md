@@ -164,6 +164,7 @@ Each row is one logical call (all its legs folded together).
 | **Talk** | Conversation length. |
 | **Hung up** | Who ended the call (caller or an internal party). |
 | **Rec** | A red dot if a recording exists for the call. |
+| **Codecs** | Only with codec capture enabled (see [CONFIGURATION.md](CONFIGURATION.md#ami--codec--media-capture-optional)): the codecs of the call, e.g. *G.722 ↔ Opus*, with **⚠** when Asterisk had to transcode between them. Details are in the call's expanded view. |
 | **Cost / Real cost / Zone / Quota** | Estimated cost of the call's billed **outbound leg(s)** — a normal outbound call, or an inbound call forwarded out to an external number — if a tariff file is configured (see [COSTS.md](COSTS.md)). *Real cost* applies free minutes; *Quota* is the free minutes left this month. |
 
 Not every column is shown by default — see [Choosing columns](#choosing-columns).
@@ -202,6 +203,15 @@ Click any row to expand it. The detail view shows:
   rejected* (from the carrier's ITU-T Q.850 cause). If the caller hung up while dialling,
   before the other side answered, it reads *Cancelled by caller* — the raw carrier cause
   is unreliable in that moment and would only mislead. Admins also see the raw cause number.
+- **Codecs** (with codec capture enabled): the codecs and a **⚠ transcoded** marker. The
+  **Details** button opens a window listing each channel — the extension or trunk, its
+  codec (**HD** for wideband codecs such as Opus or G.722), what Asterisk reads and
+  writes when it transcodes, whether media (**SRTP**) and signaling (**TLS**) were
+  encrypted (✓ / ✗, — if unknown), and the **media path** (*direct*, *via Asterisk*,
+  *conference (mix)*). Admins additionally see the **SIP Call-ID** with a **Copy** button
+  — paste it into your SIP tracer (e.g. Homer) — and the signaling and RTP addresses.
+  Calls from a period when the listener was disconnected read *Codec data not captured*;
+  calls from before the capture was enabled show nothing.
 - **System / Context:** the played announcement and (for admins) the dialplan context.
 - **Conversation timeline:** the call's segments in order — bridges (↔ between two
   parties), announcements (📢, the played prompt), IVR menu steps (🎛, which menu, the
@@ -417,6 +427,9 @@ Admins get a **gear** icon in the header:
   either back to the default anytime.
 - **Hide contexts** — manage which dialplan contexts/destinations are hidden from
   the journal (written back to `journal.hide`).
+- **Codec capture (AMI)** — only when enabled: whether the listener is connected,
+  since when it is disconnected and why, or that it has stopped sending heartbeats
+  (then check the `cdrj-ami` container).
 - **Rebuild cache** — re-derive the journal from the PBX data. Users and settings
   are kept. Do this after an update that changed the reconstruction logic, or after
   activating a license on a previously free instance. (Same as `./reset-cache.sh`

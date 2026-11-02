@@ -92,6 +92,27 @@ services:
       - "host.docker.internal:host-gateway"
     networks: [internal]
 
+  # Codec & media capture via the Asterisk Manager Interface (optional; idles without
+  # a configured `ami:` block). In this network 127.0.0.1 is the container itself:
+  # set ami.host to the PBX address (or host.docker.internal when the PBX is this
+  # host) and permit the Docker network in the AMI user. See CONFIGURATION.md -> `ami`.
+  cdrj-ami:
+    image: ${CDRJ_IMAGE:-ghcr.io/jacotec/astcdr:latest}
+    restart: unless-stopped
+    command: ["python", "-m", "app.ami.listener"]
+    env_file: [.env]
+    environment:
+      CACHE_DB_HOST: cdrj-postgres
+      CACHE_DB_PORT: "5432"
+    volumes:
+      - ./config.yaml:/app/config.yaml:ro
+    depends_on:
+      cdrj-postgres:
+        condition: service_healthy
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    networks: [internal]
+
 volumes:
   pgdata: {}
 

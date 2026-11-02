@@ -127,6 +127,14 @@ usable quickly and the rest streams in). Open your `base_url` and log in.
 - **Local admin:** the username/password from step 4.
 - **OIDC:** click the login button — see [OIDC.md](OIDC.md) for the IdP setup.
 
+## Optional: codec & media capture
+
+Want to see which codec each call used, whether Asterisk transcoded, and whether media
+and signaling were encrypted? Create an AMI user in FreePBX, put its password into
+`AMI_PASSWORD` in `.env`, enable the `ami` block in `config.yaml`, and run
+`docker compose up -d --force-recreate`. Step by step:
+**[CONFIGURATION.md → `ami`](CONFIGURATION.md#ami--codec--media-capture-optional)**.
+
 ## Next steps
 
 - **[USER-GUIDE.md](USER-GUIDE.md)** — how to use filters, columns, sorting, search.

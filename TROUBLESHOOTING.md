@@ -6,6 +6,7 @@ Common problems and how to fix them. Check container logs first:
 docker compose ps
 docker compose logs -f cdrj-ingest      # data import
 docker compose logs -f cdrj-web         # web app / login
+docker compose logs -f cdrj-ami         # codec capture (only if enabled)
 ```
 
 ---
@@ -246,6 +247,26 @@ logs** (`docker compose logs`).
 
 List your trunks under `trunks.known` and give them friendly names in
 `trunks.labels`. See [CONFIGURATION.md](CONFIGURATION.md#trunks--the-trunk-amt-column).
+
+## No **Codecs** column / the codec capture doesn't start
+
+1. The column and the detail block only exist when the `ami` block is **configured**:
+   `enabled: true` plus `host`, `username` and a non-empty password. Without
+   `AMI_PASSWORD` in `.env` the feature stays off — the log of `cdrj-ami` then says
+   *Codec capture is off*. After changing it: `docker compose up -d --force-recreate`.
+2. `docker compose logs -f cdrj-ami`:
+   - *AMI login rejected* — wrong username/password, or the AMI user lacks permissions
+     (read `call,reporting`, write `reporting`). Retries only every 5 minutes on purpose.
+   - *connection … failed (ConnectionRefusedError)* — wrong host/port, or the AMI user
+     doesn't **permit** the address AstCDR connects from. Host mode connects from
+     `127.0.0.1`; the isolated compose from the Docker network.
+3. Admin settings → *Codec capture (AMI)* shows the current state.
+
+## Calls show *Codec data not captured*
+
+The listener was disconnected during those calls (container stopped, PBX restarted,
+network gone). Codecs exist only while a call runs, so these calls can't be filled in
+later. Calls from before the capture was enabled show no codec information at all.
 
 ## I need to start the data over
 
