@@ -130,6 +130,7 @@ ami:                                    # optional: codec & media capture (Aster
   password: "${AMI_PASSWORD}"           # via ${ENV}; never written to config.yaml
   # resample_delay_s: 2                 # 2nd sample after a bridge forms (transcoding settles)
   # ping_interval_s: 30                 # keepalive; no answer -> reconnect
+  # qos: true                           # voice quality from RTCP (loss, jitter, RTT)
 
 ui:
   brand_title: "Call Journal"

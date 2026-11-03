@@ -208,7 +208,12 @@ Click any row to expand it. The detail view shows:
   codec (**HD** for wideband codecs such as Opus or G.722), what Asterisk reads and
   writes when it transcodes, whether media (**SRTP**) and signaling (**TLS**) were
   encrypted (✓ / ✗, — if unknown), and the **media path** (*direct*, *via Asterisk*,
-  *conference (mix)*). Admins additionally see the **SIP Call-ID** with a **Copy** button
+  *conference (mix)*). Below that, **Voice quality (RTCP)** per channel: what
+  **Asterisk receives** from that party (measured by Asterisk) and what the **endpoint
+  receives** from Asterisk (reported by the endpoint) — lost packets with the **peak**
+  (worst ~5-second report interval), jitter (average / maximum) and the round-trip time
+  (**RTT**). A **—** means no report came for that side; no values are made up.
+  Admins additionally see the **SIP Call-ID** with a **Copy** button
   — paste it into your SIP tracer (e.g. Homer) — and the signaling and RTP addresses.
   Calls from a period when the listener was disconnected read *Codec data not captured*;
   calls from before the capture was enabled show nothing.

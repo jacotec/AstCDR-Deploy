@@ -262,6 +262,18 @@ List your trunks under `trunks.known` and give them friendly names in
      `127.0.0.1`; the isolated compose from the Docker network.
 3. Admin settings → *Codec capture (AMI)* shows the current state.
 
+## Codecs are shown, but no voice quality (or only one side)
+
+The values come from the RTCP reports that Asterisk and the endpoint exchange about every
+5 seconds during a call:
+- **Short calls** (a few seconds) end before the first report — nothing to show.
+- **One side "—"**: that endpoint doesn't send RTCP reports (some trunks and phones
+  don't), or RTCP is blocked by a firewall/NAT. Asterisk's own measurement (*Asterisk
+  receives*) still works.
+- **No RTT**: a round-trip time needs a full report exchange; values a phone reports with
+  broken timestamps are discarded on purpose.
+- `qos: false` in the `ami` block switches the voice quality off entirely.
+
 ## Calls show *Codec data not captured*
 
 The listener was disconnected during those calls (container stopped, PBX restarted,

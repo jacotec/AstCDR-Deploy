@@ -30,6 +30,8 @@ on start.
 - Per call: the **codec** of every leg, a **⚠ transcoding** marker, **HD** voice, whether
   media (**SRTP**) and signaling (**TLS**) were encrypted, and the media path — read live
   from the Asterisk Manager Interface, no dialplan changes.
+- **Voice quality** from the RTCP reports: packet loss, jitter and round-trip time, for both
+  directions of every leg.
 - Admins get the **SIP Call-ID** with a copy button, to look the call up in a SIP tracer.
 
 **Filtering & search**

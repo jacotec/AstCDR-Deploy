@@ -295,7 +295,8 @@ Asterisk does not store codecs anywhere in CDR or CEL — they only exist on the
 channel. With this block, the `cdrj-ami` container listens on the **Asterisk Manager
 Interface** while calls run and records, per channel: the **codec**, whether Asterisk
 **transcodes**, whether media (**SRTP**) and signaling (**TLS**) are encrypted, the
-**media path**, and (admins only) the SIP Call-ID and addresses. It never changes
+**media path**, the **voice quality** from the RTCP reports (packet loss, jitter,
+round-trip time), and (admins only) the SIP Call-ID and addresses. It never changes
 anything on the PBX — it only reads (`Getvar`). Omit the block (or set `enabled: false`)
 and AstCDR behaves exactly as without the feature: no column, no detail block, the
 container just idles.
@@ -309,6 +310,7 @@ ami:
   password: "${AMI_PASSWORD}"   # via ${ENV}; keep secrets out of config.yaml
   # resample_delay_s: 2
   # ping_interval_s: 30
+  # qos: true
 ```
 
 | Key | Meaning |
@@ -318,13 +320,15 @@ ami:
 | `username` / `password` | The AMI user from FreePBX (below). Use `${ENV}` for the password. |
 | `resample_delay_s` | Seconds until a channel is sampled a second time after joining a bridge — the transcoding path can settle a moment later. Default `2` (0.5–10). |
 | `ping_interval_s` | Keepalive interval; an unanswered ping triggers a reconnect. Default `30` (5–300). |
+| `qos` | Collect the voice quality from the RTCP reports. Default `true`; `false` records codecs only. |
 
 **Create the AMI user in FreePBX** — *Settings → Asterisk Manager Users → Add Manager*:
 - **Name** `astcdr`, a strong **secret** (that goes into `AMI_PASSWORD`).
 - **Deny** `0.0.0.0/0.0.0.0`, **Permit** `127.0.0.1/255.255.255.255` (host mode). For the
   isolated compose, permit the Docker network instead (e.g. `172.16.0.0/255.240.0.0`).
-- **Read:** `call` and `reporting`. **Write:** only `reporting` — that is all `Getvar`
-  needs. Do **not** grant `call` for write: it would allow hanging up or redirecting calls.
+- **Read:** `call` and `reporting` (`reporting` carries the RTCP reports for the voice
+  quality). **Write:** only `reporting` — that is all `Getvar` needs. Do **not** grant
+  `call` for write: it would allow hanging up or redirecting calls.
 - *Submit* and *Apply Config*.
 
 Then apply it with `docker compose up -d --force-recreate`. The admin settings page
@@ -336,6 +340,11 @@ shows whether the listener is connected (see [USER-GUIDE.md](USER-GUIDE.md#admin
 - No cache rebuild is needed. A rebuild does **not** delete codec data either (it can't
   be re-read from anywhere); data of calls that leave the journal is cleaned up
   automatically.
+- Voice quality comes from the RTCP reports both sides exchange about every 5 seconds.
+  Very short calls (no report yet) show none, the last seconds before hang-up are not
+  covered, and an endpoint that sends no RTCP of its own leaves its side empty — AstCDR
+  never fills gaps with zeros. Implausible round-trip times (some phones report broken
+  timestamps) are discarded.
 - If the listener is disconnected for a while, calls from that period show
   *Codec data not captured* instead of nothing. A rejected login is retried only every
   5 minutes, to keep failed attempts out of the PBX's security log (fail2ban).
