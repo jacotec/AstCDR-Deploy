@@ -205,7 +205,10 @@ Click any row to expand it. The detail view shows:
   is unreliable in that moment and would only mislead. Admins also see the raw cause number.
 - **Codecs** (with codec capture enabled): the codecs and a **⚠ transcoded** marker. The
   **Details** button opens a window listing each channel — the extension or trunk, its
-  codec (**HD** for wideband codecs such as Opus or G.722), what Asterisk reads and
+  codec (**HD** for wideband codecs such as Opus or G.722; **HD↓** when that leg uses a
+  wideband codec but only gets narrowband audio — the other party in the same connection
+  is narrowband, e.g. PCMA from the trunk, or Asterisk plays an 8 kHz announcement), what
+  Asterisk reads and
   writes when it transcodes, whether media (**SRTP**) and signaling (**TLS**) were
   encrypted (✓ / ✗, — if unknown), and the **media path** (*direct*, *via Asterisk*,
   *conference (mix)*). Below that, **Voice quality (RTCP)** per channel: what
