@@ -106,6 +106,7 @@ services:
       CACHE_DB_PORT: "5432"
     volumes:
       - ./config.yaml:/app/config.yaml:ro
+      - ./license:/app/license:ro   # license folder (codec capture is a licensed feature)
     depends_on:
       cdrj-postgres:
         condition: service_healthy

@@ -301,6 +301,11 @@ anything on the PBX — it only reads (`Getvar`). Omit the block (or set `enable
 and AstCDR behaves exactly as without the feature: no column, no detail block, the
 container just idles.
 
+> **Licensed version only.** Without a valid license the `ami` block is ignored — AstCDR
+> behaves exactly as if it weren't configured, and the `cdrj-ami` log says *Codec capture
+> requires a valid license*. Drop a license into `license/` and the capture starts on its
+> own within a minute, no restart. See [LICENSE.md](LICENSE.md).
+
 ```yaml
 ami:
   enabled: true

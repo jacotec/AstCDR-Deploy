@@ -213,7 +213,8 @@ Click any row to expand it. The detail view shows:
   is narrowband, e.g. PCMA from the trunk, or Asterisk plays an 8 kHz announcement), what
   Asterisk reads and
   writes when it transcodes, whether media (**SRTP**) and signaling (**TLS**) were
-  encrypted (✓ / ✗, — if unknown), and the **media path** (*direct*, *via Asterisk*,
+  encrypted (✓ / ✗, — if it can't be proven; TLS counts as ✓ when the call's SIP
+  address demands it or the endpoint uses a TLS transport such as `0.0.0.0-tls`), and the **media path** (*direct*, *via Asterisk*,
   *conference (mix)*). Below that, **Voice quality (RTCP)** per channel: what
   **Asterisk receives** from that party (measured by Asterisk) and what the **endpoint
   receives** from Asterisk (reported by the endpoint) — the average **data rate**, lost
@@ -294,7 +295,8 @@ At the bottom: the total number of matching calls, a **per page** selector
 (100 / 250 / 500) and page navigation.
 
 > In the **free version**, the journal shows at most the 100 most recent calls and
-> the engine keeps only the last 30 days. See [LICENSE.md](LICENSE.md).
+> the engine keeps only the last 30 days; the codec & media capture (Codecs column,
+> `codec:` search) is not available. See [LICENSE.md](LICENSE.md).
 
 ---
 

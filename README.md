@@ -26,7 +26,7 @@ on start.
   the caller sits on hold.
 - Ring and talk time per step, so the numbers add up.
 
-**Codecs & media** (optional)
+**Codecs & media** (optional, licensed version)
 - Per call: the **codec** of every leg, a **⚠ transcoding** marker, **HD** voice, whether
   media (**SRTP**) and signaling (**TLS**) were encrypted, and the media path — read live
   from the Asterisk Manager Interface, no dialplan changes.
@@ -112,10 +112,11 @@ do that whenever I feel like it and actually have the time. And if that's not th
 case for half a year, then it just isn't.
 
 So, in the spirit of honesty: if you're happy to play with it under these terms —
-wonderful. The last 30 days and the last 100 calls work with no restrictions.
+wonderful. The last 30 days and the last 100 calls work with no restrictions; the
+optional codec & media capture is part of the licensed version.
 
 For every donation of €25 or more, I'll gladly issue a license file that removes
-this limit. For details, see [LICENSE.md](LICENSE.md).
+these limits. For details, see [LICENSE.md](LICENSE.md).
 
 <a href="https://buymeacoffee.com/jacotec" target="_blank"><img src="https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png" alt="Buy me a coffee" height="48"></a>
 

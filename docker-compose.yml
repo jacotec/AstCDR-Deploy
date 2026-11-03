@@ -102,6 +102,7 @@ services:
     env_file: [.env]
     volumes:
       - ./config.yaml:/app/config.yaml:ro
+      - ./license:/app/license:ro   # license folder (codec capture is a licensed feature)
     depends_on:
       cdrj-postgres:
         condition: service_healthy

@@ -26,6 +26,7 @@ license file by email.
 |---|---|---|
 | Journal rows shown | **100 most recent** (no further pages) | unlimited |
 | History fetched by the engine | **last 30 days** (older cache entries are actively pruned) | full history |
+| Codec & media capture (`ami` block: codecs, transcoding, SRTP/TLS, voice quality) | **not available** — the `ami` block is ignored, AstCDR behaves as if it weren't configured | available |
 | Footer | *Unregistered Version* | *Licensed for &lt;name&gt;, &lt;email&gt; — Main Version N.x* |
 
 Everything else — filters, columns, sorting, details, OIDC, geo — is identical in
@@ -39,7 +40,8 @@ both modes.
    /opt/astcdr/license/astcdr.lic
    ```
 3. **That's it.** AstCDR picks it up **automatically within a few seconds — no
-   restart needed.** The footer switches to *Licensed for …*.
+   restart needed.** The footer switches to *Licensed for …*. A configured codec
+   capture (`ami` block) starts on its own within a minute.
 4. If this instance ran as the **free version** before, rebuild the cache once so
    the full history is imported (the free version only kept the last 30 days):
    ```bash

@@ -250,6 +250,9 @@ List your trunks under `trunks.known` and give them friendly names in
 
 ## No **Codecs** column / the codec capture doesn't start
 
+0. The codec capture is part of the **licensed version**. Without a valid license the
+   `ami` block is ignored (log of `cdrj-ami`: *Codec capture requires a valid license*;
+   Admin settings say so too). See [LICENSE.md](LICENSE.md).
 1. The column and the detail block only exist when the `ami` block is **configured**:
    `enabled: true` plus `host`, `username` and a non-empty password. Without
    `AMI_PASSWORD` in `.env` the feature stays off — the log of `cdrj-ami` then says
@@ -273,6 +276,15 @@ The values come from the RTCP reports that Asterisk and the endpoint exchange ab
 - **No RTT**: a round-trip time needs a full report exchange; values a phone reports with
   broken timestamps are discarded on purpose.
 - `qos: false` in the `ami` block switches the voice quality off entirely.
+
+## TLS shows ✗ or — although the trunk uses TLS
+
+Asterisk's own flag (`CHANNEL(pjsip,secure)`) only looks at the SIP address of the call:
+a provider that runs over TLS but sends `sip:…:5061` instead of `sips:` or
+`;transport=tls` reads as "not secure". AstCDR therefore also checks the **transport of
+the endpoint**: a transport whose name says `tls`/`wss` (FreePBX: `0.0.0.0-tls`) counts as
+TLS. ✗ is only shown when both point to unencrypted (`udp`/`tcp`/`ws`); anything else is
+**—** (not provable). Calls recorded before this check keep their old value.
 
 ## Calls show *Codec data not captured*
 
