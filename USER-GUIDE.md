@@ -99,6 +99,7 @@ plus the trunk (substring, case-insensitive):
 | `status:` | `answered`/`ok`, `missed`, `voicemail` |
 | `richtung:` / `dir:` | `inbound`, `outbound`, `internal` |
 | `zone:` | the cost **zone** |
+| `codec:` | calls where a channel used that **codec** — `opus`, `g722`, `pcma`/`alaw`, `pcmu`/`ulaw`, `g729` … (also written like the display, e.g. `G.722`) — or `codec:transcoded` (also `transkodiert`, `tc`) for calls Asterisk **transcoded**. Same rule as the *Codecs* column: the latest sample of each channel counts. Needs codec capture (`ami:`). |
 
 **Combine** with boolean logic:
 - **AND** — put terms side by side (implicit), or write `AND` / `UND`.
@@ -110,6 +111,8 @@ Examples:
 - `status:missed to:+49221 -nst:19` — missed calls to +49221…, but not extension 19.
 - `von:Meier richtung:inbound` — incoming calls from a caller named Meier.
 - `(amt:telekom OR amt:easybell) status:answered` — answered calls on either trunk.
+- `codec:transcoded amt:easybell` — calls on the easybell trunk that Asterisk had to transcode.
+- `codec:opus -codec:transcoded` — Opus calls that ran without transcoding.
 
 The dropdowns and checkboxes below still narrow further — they combine with your
 search as **AND**.
