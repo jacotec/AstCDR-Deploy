@@ -171,6 +171,8 @@ Then open your `base_url` in a browser and log in. Full details: **[INSTALL.md](
 
 <img width="1822" height="935" alt="image" src="https://github.com/user-attachments/assets/6db05475-4c7b-4927-bcb6-4d16670973c3" />
 
+<img width="984" height="795" alt="image" src="https://github.com/user-attachments/assets/318f9fa3-3ff5-4a91-a60b-2a26484908f6" />
+
 <img width="1835" height="937" alt="image" src="https://github.com/user-attachments/assets/8a62cc8a-ae36-4b4f-a4cf-610d9a371955" />
 
 <img width="1837" height="937" alt="image" src="https://github.com/user-attachments/assets/97714353-e306-4bf2-b2cd-7b4330ad0bbe" />
