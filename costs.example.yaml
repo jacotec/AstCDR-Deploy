@@ -16,6 +16,10 @@ easybell:
     local_area: "2275"         # your own area code (without the 0) — for numbers dialed without a prefix
     national_prefix: "0"       # national dialing prefix
     intl_prefix: "00"          # international dialing prefix
+    cost_warnings:             # optional: email when this trunk's MONTHLY cost
+      - 50                     # (net, after free minutes) crosses each threshold,
+      - 100                    # in currency units. One mail per threshold, once
+      - 250                    # per month. Needs the [email] block configured.
 
   zones:
     # REQUIRED. No prefix (= country_code). Optional monthly free minutes.
@@ -35,6 +39,11 @@ easybell:
         - "+4917."
       cost: 0.19
       freemin: 200
+      contingent_warnings:     # optional: email when the remaining free-minute quota
+        - 50                   # for this zone drops below each percentage (this month).
+        - 20                   # One mail per threshold; the 0% mail is sent exactly once.
+        - 10                   # Needs freemin (above) and the [email] block configured.
+        - 0
 
     swiss:
       name: Switzerland
