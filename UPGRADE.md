@@ -79,6 +79,18 @@ service into yours), then follow
 [CONFIGURATION.md → `ami`](CONFIGURATION.md#ami--codec--media-capture-optional). Without a
 configured `ami` block the container just idles.
 
+**Codec capture became a licensed feature.** `cdrj-ami` now checks the license itself and
+therefore needs the `license` folder, like `cdrj-web` and `cdrj-ingest`. If you already
+run `cdrj-ami` with an older compose file, add this line to its `volumes:` (or take the
+new `docker-compose.yml` from the bundle), then `docker compose up -d`:
+
+```yaml
+      - ./license:/app/license:ro
+```
+
+Without it the listener never sees your license and the capture stays off (log:
+*Codec capture requires a valid license*).
+
 ### Pin a fixed version instead of `:latest`
 
 To stay on a specific version (and update only deliberately), set in `.env`:
