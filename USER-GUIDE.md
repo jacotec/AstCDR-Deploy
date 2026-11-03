@@ -213,9 +213,13 @@ Click any row to expand it. The detail view shows:
   encrypted (✓ / ✗, — if unknown), and the **media path** (*direct*, *via Asterisk*,
   *conference (mix)*). Below that, **Voice quality (RTCP)** per channel: what
   **Asterisk receives** from that party (measured by Asterisk) and what the **endpoint
-  receives** from Asterisk (reported by the endpoint) — lost packets with the **peak**
-  (worst ~5-second report interval), jitter (average / maximum) and the round-trip time
-  (**RTT**). A **—** means no report came for that side; no values are made up.
+  receives** from Asterisk (reported by the endpoint) — the average **data rate**, lost
+  packets with the **peak** (worst ~5-second report interval), jitter (average / maximum)
+  and the round-trip time (**RTT**). The data rate comes from the sender's own counters
+  and needs about 10 s of talk time; depending on the device it includes the RTP header
+  or the SRTP checksum, so it can read up to about 5 kbit/s above the pure codec rate
+  (e.g. ≈ 68 instead of 64 kbit/s for G.722). A **—** means no report came for that side;
+  no values are made up.
   Admins additionally see the **SIP Call-ID** with a **Copy** button
   — paste it into your SIP tracer (e.g. Homer) — and the signaling and RTP addresses.
   Calls from a period when the listener was disconnected read *Codec data not captured*;

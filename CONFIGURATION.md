@@ -295,8 +295,8 @@ Asterisk does not store codecs anywhere in CDR or CEL — they only exist on the
 channel. With this block, the `cdrj-ami` container listens on the **Asterisk Manager
 Interface** while calls run and records, per channel: the **codec**, whether Asterisk
 **transcodes**, whether media (**SRTP**) and signaling (**TLS**) are encrypted, the
-**media path**, the **voice quality** from the RTCP reports (packet loss, jitter,
-round-trip time), and (admins only) the SIP Call-ID and addresses. It never changes
+**media path**, the **voice quality** from the RTCP reports (data rate, packet loss,
+jitter, round-trip time), and (admins only) the SIP Call-ID and addresses. It never changes
 anything on the PBX — it only reads (`Getvar`). Omit the block (or set `enabled: false`)
 and AstCDR behaves exactly as without the feature: no column, no detail block, the
 container just idles.
