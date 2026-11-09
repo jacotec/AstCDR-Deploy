@@ -165,7 +165,7 @@ Each row is one logical call (all its legs folded together).
 | **Involved** | The internal extensions that took part. |
 | **Ring** | Time until answer. |
 | **Talk** | Conversation length. |
-| **Hung up** | Who ended the call (caller or an internal party). |
+| **Hung up** | Who ended the call: an internal extension, or the external party — shown as *Caller* on inbound calls and *Callee* on outbound calls. |
 | **Rec** | A red dot if a recording exists for the call. |
 | **Codecs** | Only with codec capture enabled (see [CONFIGURATION.md](CONFIGURATION.md#ami--codec--media-capture-optional)): the codecs of the call, e.g. *G.722 ↔ Opus*, with **⚠** when Asterisk had to transcode between them. Details are in the call's expanded view. |
 | **Cost / Real cost / Zone / Quota** | Estimated cost of the call's billed **outbound leg(s)** — a normal outbound call, or an inbound call forwarded out to an external number — if a tariff file is configured (see [COSTS.md](COSTS.md)). *Real cost* applies free minutes; *Quota* is the free minutes left this month. |
