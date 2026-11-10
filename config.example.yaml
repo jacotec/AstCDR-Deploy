@@ -129,6 +129,7 @@ ami:                                    # optional, licensed version: codec & me
   username: "astcdr"                    # AMI user from FreePBX: Settings -> Asterisk Manager Users
   password: "${AMI_PASSWORD}"           # via ${ENV}; never written to config.yaml
   # resample_delay_s: 2                 # 2nd sample after a bridge forms (transcoding settles)
+  # late_resample_s: 10                 # late sample: codec renegotiated after answer; 0 = off
   # ping_interval_s: 30                 # keepalive; no answer -> reconnect
   # qos: true                           # voice quality from RTCP (rate, loss, jitter, RTT)
 

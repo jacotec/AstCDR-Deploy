@@ -314,6 +314,7 @@ ami:
   username: "astcdr"
   password: "${AMI_PASSWORD}"   # via ${ENV}; keep secrets out of config.yaml
   # resample_delay_s: 2
+  # late_resample_s: 10
   # ping_interval_s: 30
   # qos: true
 ```
@@ -324,6 +325,7 @@ ami:
 | `host` / `port` | Where the AMI listens. Host-mode compose (AstCDR on the PBX): `127.0.0.1`. Isolated compose: the PBX address, or `host.docker.internal` if the PBX is the Docker host. |
 | `username` / `password` | The AMI user from FreePBX (below). Use `${ENV}` for the password. |
 | `resample_delay_s` | Seconds until a channel is sampled a second time after joining a bridge — the transcoding path can settle a moment later. Default `2` (0.5–10). |
+| `late_resample_s` | One more, later sample after joining a bridge. It catches a codec the provider renegotiates after the call is answered (e.g. answers with G.722, switches to PCMA a few seconds later); it is stored only if something changed. Default `10` (5–120), `0` turns it off. |
 | `ping_interval_s` | Keepalive interval; an unanswered ping triggers a reconnect. Default `30` (5–300). |
 | `qos` | Collect the voice quality from the RTCP reports. Default `true`; `false` records codecs only. |
 

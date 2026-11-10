@@ -210,7 +210,8 @@ Click any row to expand it. The detail view shows:
   **Details** button opens a window listing each channel — the extension or trunk, its
   codec (**HD** for wideband codecs such as Opus or G.722; **HD↓** when that leg uses a
   wideband codec but only gets narrowband audio — the other party in the same connection
-  is narrowband, e.g. PCMA from the trunk, or Asterisk plays an 8 kHz announcement), what
+  is narrowband, e.g. PCMA from the trunk, also when the call reached the phone through a
+  queue, ring group or Follow-Me, or Asterisk plays an 8 kHz announcement), what
   Asterisk reads and
   writes when it transcodes, whether media (**SRTP**) and signaling (**TLS**) were
   encrypted (✓ / ✗, — if it can't be proven; TLS counts as ✓ when the call's SIP
