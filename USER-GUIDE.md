@@ -242,6 +242,13 @@ Click any row to expand it. The detail view shows:
   with the destination it was sent to. Any step that goes **out over a trunk** (a normal
   outbound call, or a leg forwarded to an external number) is tagged **“over &lt;trunk&gt;”**,
   so you can see which trunk carried it — which is also the trunk its cost lands on.
+  A call into a **conference room** (FreePBX *Conferences*) shows a **👥 Conference room
+  &lt;number&gt;** step: when the caller was in the room, who else was in it at the same
+  time, and the talk time — the time spent together with at least one other participant
+  (waiting for the leader or recording your name doesn't count). Every participant keeps
+  their own call in the journal; the call counts as answered as soon as someone talked in
+  the room, and the room number is listed under *Involved*, so filtering for it finds all
+  calls into that room.
 
 Click the row again to collapse it. Open rows stay open while the journal
 auto-refreshes.
