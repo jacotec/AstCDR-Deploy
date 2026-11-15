@@ -243,6 +243,15 @@ logs** (`docker compose logs`).
 > the Postgres container (see `.env.example`) or start the query with
 > `SET TIME ZONE 'Europe/Berlin';`.
 
+## AstCDR lists more calls than the FreePBX CDR report
+
+That is expected. FreePBX's CDR report reads the `cdr` table; AstCDR reads the CEL
+events, which record every call. With Asterisk's default (`unanswered = no` in
+`cdr.conf`), **no CDR is written** for a call that was never answered *and* never reached
+another party — typically a phone that hung up within a second, before the PBX dialled
+anything (a redial or speed-dial key pressed by accident). AstCDR still shows these calls:
+outbound to the dialled number, no trunk, termination *Cancelled by caller*.
+
 ## Trunk column is empty or shows raw names
 
 List your trunks under `trunks.known` and give them friendly names in

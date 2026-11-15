@@ -205,7 +205,10 @@ Click any row to expand it. The detail view shows:
   other than a normal hang-up — e.g. *Number not in service*, *User busy*, *Call
   rejected* (from the carrier's ITU-T Q.850 cause). If the caller hung up while dialling,
   before the other side answered, it reads *Cancelled by caller* — the raw carrier cause
-  is unreliable in that moment and would only mislead. Admins also see the raw cause number.
+  is unreliable in that moment and would only mislead. The same applies when a phone
+  hangs up before the PBX even routed the call (e.g. a redial key pressed by accident):
+  such a call is listed as *outbound* to the dialled number, without a trunk. Admins also
+  see the raw cause number.
 - **Codecs** (with codec capture enabled): the codecs and a **⚠ transcoded** marker. The
   **Details** button opens a window listing each channel — the extension or trunk, its
   codec (**HD** for wideband codecs such as Opus or G.722; **HD↓** when that leg uses a
