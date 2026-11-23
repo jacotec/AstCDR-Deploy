@@ -171,7 +171,7 @@ only), or `both`. Full OIDC walkthrough for Nextcloud/Authentik/Keycloak:
         email: "admin@example.com"
         display_name: "Administrator"
         password_hash: "$2b$12$…"
-        role: "admin"        # admin | user
+        role: "admin"        # admin (= superadmin) | user
 ```
 
 - Generate the hash: `docker compose run --rm cdrj-web python -m app.auth.local "MY-PASSWORD"`.
@@ -179,6 +179,10 @@ only), or `both`. Full OIDC walkthrough for Nextcloud/Authentik/Keycloak:
 - Login works by **username or email**. The `email` links this local user to the
   same person's OIDC login (same email → same identity and preferences).
 - Keep at least one local admin as a fallback even when using OIDC.
+- `role: admin` makes the user a **superadmin** (may do everything); `role: user` gets the
+  role *Benutzer*. Local users have no OIDC groups, so further roles do not apply to them.
+  Roles and rights are managed in the app — see
+  [USER-GUIDE.md → Users & roles](USER-GUIDE.md#users--roles).
 
 ---
 

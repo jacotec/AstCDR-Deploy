@@ -33,7 +33,7 @@ auth:
     scopes: ["openid", "profile", "email", "groups"]
     username_claim: "preferred_username"
     groups_claim: "groups"
-    admin_groups: ["admin"]       # members of these groups become admins
+    admin_groups: ["admin"]       # members of these groups become superadmins
     button_label: "Authentik"     # text on the login button
 ```
 
@@ -42,10 +42,10 @@ auth:
 | `issuer` | The IdP issuer URL. |
 | `server_metadata_url` | Discovery document URL. Leave empty for the OIDC standard `issuer/.well-known/openid-configuration`. **Nextcloud needs it explicitly** (see below). |
 | `client_id` / `client_secret` | From the IdP. The secret comes via `${OIDC_CLIENT_SECRET}` from `.env`. |
-| `scopes` | Request `openid profile email`; add `groups` if you use `admin_groups`. |
+| `scopes` | Request `openid profile email`; add `groups` if you use `admin_groups` or roles with an OIDC group. |
 | `username_claim` | Which claim becomes the username (usually `preferred_username`). |
 | `groups_claim` | Which claim carries group membership. |
-| `admin_groups` | Users in any of these groups get the **admin** role; everyone else is a normal user. |
+| `admin_groups` | Users in any of these groups are **superadmins** (may do everything). Everyone else gets the role *Benutzer* plus every role whose OIDC group they are in — roles are managed in the app (see [USER-GUIDE.md → Users & roles](USER-GUIDE.md#users--roles)). |
 | `button_label` | Text on the login button. |
 | `link_by_unverified_email` | Link to an existing account by email even without an `email_verified` claim. Off by default — see [Account linking](#account-linking). |
 

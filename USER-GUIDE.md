@@ -46,7 +46,7 @@ identical in every view**, and your current filter (date range, trunks, search �
 - **Theme** (moon/sun) — dark / light / follow the OS.
 - **Fullscreen** — hides the header, KPIs and filters to show as many rows as
   possible; a floating button brings them back.
-- **Settings** (gear, admins only) — see [Admin settings](#admin-settings).
+- **Settings** (gear, only with an admin right) — see [Admin settings](#admin-settings).
 - **Account** — your name and role, and **Sign out**.
 
 ## Key figures (KPIs)
@@ -207,8 +207,8 @@ Click any row to expand it. The detail view shows:
   before the other side answered, it reads *Cancelled by caller* — the raw carrier cause
   is unreliable in that moment and would only mislead. The same applies when a phone
   hangs up before the PBX even routed the call (e.g. a redial key pressed by accident):
-  such a call is listed as *outbound* to the dialled number, without a trunk. Admins also
-  see the raw cause number.
+  such a call is listed as *outbound* to the dialled number, without a trunk. With the
+  right *Technical details* you also see the raw cause number.
 - **Codecs** (with codec capture enabled): the codecs and a **⚠ transcoded** marker. The
   **Details** button opens a window listing each channel — the extension or trunk, its
   codec (**HD** for wideband codecs such as Opus or G.722; **HD↓** when that leg uses a
@@ -228,11 +228,11 @@ Click any row to expand it. The detail view shows:
   or the SRTP checksum, so it can read up to about 5 kbit/s above the pure codec rate
   (e.g. ≈ 68 instead of 64 kbit/s for G.722). A **—** means no report came for that side;
   no values are made up.
-  Admins additionally see the **SIP Call-ID** with a **Copy** button
+  With the right *Technical details* you additionally see the **SIP Call-ID** with a **Copy** button
   — paste it into your SIP tracer (e.g. Homer) — and the signaling and RTP addresses.
   Calls from a period when the listener was disconnected read *Codec data not captured*;
   calls from before the capture was enabled show nothing.
-- **System / Context:** the played announcement and (for admins) the dialplan context.
+- **System / Context:** the played announcement and (with *Technical details*) the dialplan context.
 - **Conversation timeline:** the call's segments in order — bridges (↔ between two
   parties), announcements (📢, the played prompt), IVR menu steps (🎛, which menu, the
   prompt, and the key the caller pressed), park (⏸), conferences, and voicemail (✉) —
@@ -435,7 +435,7 @@ read-only here), a **Send test email** button to confirm delivery, and checkboxe
   operator configured.
 - **Quota warnings** — get an email when a zone's free-minute quota for the month runs
   low (or is used up).
-- **Errors and warnings** *(admins only)* — get an email when something needs
+- **Errors and warnings** *(right Settings only)* — get an email when something needs
   attention: the data ingest goes offline, the PBX database becomes unreachable, the
   tariff file has errors, or the license is invalid. A short **resolved** email follows
   once the condition clears.
@@ -448,7 +448,12 @@ call. Which trunks/zones have thresholds is set by the operator in the tariff fi
 
 ## Admin settings
 
-Admins get a **gear** icon in the header:
+Users with at least one admin right (**Settings**, **Users & roles** or **Audit log** —
+see [Users & roles](#users--roles)) get a **gear** icon in the header. It opens the first
+admin area they may use; tabs at the top switch between **Settings**, **Users & roles**
+and **Audit log** (each tab only with its right).
+
+**Settings** (right *Settings*):
 - **Logo & app icon** — upload your own **logo** (PNG) and browser-tab **icon**
   (PNG or ICO) to brand the app. The logo appears in the header and on the login
   page; without an upload the built-in glyph is used. Max 2 MB per file; reset
@@ -462,6 +467,54 @@ Admins get a **gear** icon in the header:
   are kept. Do this after an update that changed the reconstruction logic, or after
   activating a license on a previously free instance. (Same as `./reset-cache.sh`
   on the host.)
+
+## Users & roles
+
+Who may do what is set in **roles**. A role has a name, an optional **OIDC group** and a
+list of **rights**.
+
+- **Rights only add up.** Someone with several roles gets the sum of their rights; there
+  is no “deny”.
+- The built-in role **Benutzer** applies to **everyone signed in** and cannot be
+  deleted. Out of the box it has *Journal: all calls*, *Export*, *See costs* and
+  *Statistics* — exactly what a normal user could do before roles existed. Change it to
+  change what everybody may do.
+- Every other role is given to users through their **OIDC group** at sign-in
+  (case-insensitive). A changed group mapping applies from the next sign-in; changed
+  rights of a role apply immediately.
+- **Superadmins** may do everything without any role: members of
+  `auth.oidc.admin_groups` and local users with `role: admin`. That way you can never lock
+  yourself out while setting up roles.
+- Rights that are added by a later update start **unticked** in every role and are
+  marked **new** — an update never grants anything silently.
+- Rights of the operator panel, voicemail and recordings are marked **licensed version**:
+  they can be ticked, but only take effect with a valid license.
+
+| Right | What it allows |
+|---|---|
+| Journal: own calls only | List, costs and statistics show only calls that involved one of the user's **own extensions** (see below). |
+| Journal: all calls | All calls of the PBX. |
+| Export (CSV/PDF) | Exports of journal, costs and statistics — limited to the journal rights. |
+| See costs | Cost columns, the costs page and costs in printouts. |
+| Technical details | Cause number, dialplan context, SIP call ID and addresses in the call details. |
+| Statistics | The statistics page. |
+| Settings | The settings page, and admin warning emails (see [Email notifications](#email-notifications)). |
+| Users and roles | This page. Whoever has it can grant themselves anything — give it deliberately. |
+| Audit log | The [audit log](#audit-log). |
+
+**Users tab.** Accounts appear after their first sign-in. Open a user to see their roles
+and OIDC groups from the last sign-in and to assign their **own extensions** — also
+virtual ones such as a voicemail box. A user with *own calls only* and no extension sees
+no calls. **Delete user** removes the account with its extensions and personal settings;
+remove the user from your identity provider first, otherwise the next sign-in creates the
+account again. You cannot delete your own account.
+
+## Audit log
+
+Security-relevant actions with time, user, target and IP: role and right changes,
+assigned or removed extensions, deleted users, settings changes (hide rules, branding,
+cost check, cache rebuild) and **rejected sign-ins** (the entered name, never the
+password). Filter by action at the top. Entries older than one year are removed.
 
 ---
 

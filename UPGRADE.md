@@ -11,6 +11,23 @@ docker compose up -d       # recreate containers with it
 The compose file uses the `:latest` tag by default, so `pull` fetches the newest
 release. Your data (cache, users, settings) is preserved across updates.
 
+### Users & roles (version 2.0)
+
+Version 2.0 replaces the fixed *admin/user* split with roles and rights (see
+[USER-GUIDE.md → Users & roles](USER-GUIDE.md#users--roles)). Nothing has to be done for
+the update, and nobody gains or loses access:
+
+- The role **Benutzer** is created automatically with exactly the rights a normal user
+  had before, and applies to everyone signed in.
+- Former admins (`auth.oidc.admin_groups`, local `role: admin`) are **superadmins** and
+  may still do everything.
+- Two things that were tied to the admin role are now rights of their own: **Technical
+  details** in the call details (cause number, context, SIP call ID, addresses) and
+  **admin warning emails** (right *Settings*). Superadmins have both; give them to others
+  through a role if needed.
+- New tables (roles, extensions, audit log) are created on start. Like users, they survive
+  a cache rebuild.
+
 ### ⚠️ One-time: the containers now use host networking
 
 **Breaking change.** AstCDR used to run in Docker's own bridge network and publish the
