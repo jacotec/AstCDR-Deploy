@@ -446,6 +446,33 @@ call. Which trunks/zones have thresholds is set by the operator in the tariff fi
 
 ---
 
+## Operator panel
+
+*Licensed version, right **Open panel**, set up as in
+[CONFIGURATION.md → panel](CONFIGURATION.md#panel--operator-panel-optional-licensed-version).*
+The **Panel** tab (leftmost in the header) shows the PBX live — it updates by itself
+within a second:
+
+- **Extensions** as tiles, coloured like the busy lamps on a phone: **green** free,
+  **amber** ringing (pulsing), **red** busy, **violet** on hold, **grey** unavailable;
+  dashed = a virtual extension without a phone (e.g. a voicemail box, with its count of
+  new messages). Each current call shows the partner's number and name, ↘ incoming /
+  ↗ outgoing, what is happening (talking, ringing, holding, on hold, conference) and the
+  duration; calls over a trunk carry the trunk name. **DND** and a **3-way** call on the
+  phone are marked.
+- **Your own extensions** come first and a little larger (assigned under
+  [Users & roles](#users--roles)); the rest sorted by **number** or **name** (remembered).
+  The search field filters by extension, name or the number of a current call.
+- **Queues:** waiting callers with position and waiting time, and the members with
+  their state (struck through = paused).
+- **Trunks:** current calls per trunk with the external number and the internal extension.
+- **Parking:** every slot of the parking lots set up in FreePBX, with who is parked and
+  for how long.
+- **Conference rooms:** rooms in use with their participants (leader, muted, talking).
+
+The dot in the header shows the connection: **live**, or *connection to the PBX lost*
+when the `cdrj-ami` container cannot reach Asterisk.
+
 ## Admin settings
 
 Users with at least one admin right (**Settings**, **Users & roles** or **Audit log** —
@@ -501,6 +528,11 @@ list of **rights**.
 | Settings | The settings page, and admin warning emails (see [Email notifications](#email-notifications)). |
 | Users and roles | This page. Whoever has it can grant themselves anything — give it deliberately. |
 | Audit log | The [audit log](#audit-log). |
+
+**Visibility in the panel.** Each role can limit which **extensions**, **queues** and
+**trunks** (by name) it sees in the [operator panel](#operator-panel): a comma list of
+numbers (`21`), ranges (`20-59`) and prefixes (`7*`); empty means all. Several roles add
+up, and everybody always sees their own extensions.
 
 **Users tab.** Accounts appear after their first sign-in. Open a user to see their roles
 and OIDC groups from the last sign-in and to assign their **own extensions** — also

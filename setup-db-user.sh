@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
-# Creates the read-only MariaDB user AstCDR needs (SELECT on asteriskcdrdb.cdr/cel).
+# Creates the read-only MariaDB user AstCDR needs (SELECT on asteriskcdrdb.cdr/cel,
+# plus a few name columns of the FreePBX database for the operator panel).
 # Run on the FreePBX host as root (the system root user reaches MariaDB via socket):
 #
 #     sudo ./setup-db-user.sh
@@ -49,6 +50,24 @@ fi
 
 echo
 echo "OK: '$DB_USER'@'localhost' may now SELECT $DB_NAME.cdr and $DB_NAME.cel."
+
+# --- 2b) Operator panel (licensed version): names from the FreePBX database ----
+# Only single COLUMNS — these tables also hold secrets (passwords, conference PINs),
+# which the user never gets. A table that does not exist (module not installed) is
+# skipped; the panel then shows numbers instead of names there.
+grant_cols() {   # table "col1, col2, …"
+  if mysql -e "GRANT SELECT ($2) ON asterisk.$1 TO '$DB_USER'@'localhost'" 2>/dev/null; then
+    echo "   + asterisk.$1 ($2)"
+  else
+    echo "   - asterisk.$1 skipped (table missing?)"
+  fi
+}
+echo "Operator panel: read access to names in the FreePBX database (only these columns):"
+grant_cols users "extension, name"
+grant_cols queues_config "extension, descr"
+grant_cols meetme "exten, description"
+grant_cols parkplus "name, parkext, parkpos, numslots"
+mysql -e "FLUSH PRIVILEGES" 2>/dev/null || true
 echo
 
 # --- 3) Offer to write it into .env -------------------------------------------

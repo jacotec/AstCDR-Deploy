@@ -133,6 +133,10 @@ ami:                                    # optional, licensed version: codec & me
   # ping_interval_s: 30                 # keepalive; no answer -> reconnect
   # qos: true                           # voice quality from RTCP (rate, loss, jitter, RTT)
 
+panel:                                  # optional, licensed version: operator panel (live view)
+  enabled: false                        # needs the ami block above; extra AMI rights, see CONFIGURATION.md
+  # meta_refresh_s: 300                 # how often names of queues/rooms/parking are read from FreePBX
+
 ui:
   brand_title: "Call Journal"
   page_size: 100

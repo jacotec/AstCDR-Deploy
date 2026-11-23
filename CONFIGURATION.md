@@ -360,6 +360,42 @@ shows whether the listener is connected (see [USER-GUIDE.md](USER-GUIDE.md#admin
   *Codec data not captured* instead of nothing. A rejected login is retried only every
   5 minutes, to keep failed attempts out of the PBX's security log (fail2ban).
 
+## `panel` — operator panel (optional, licensed version)
+
+A live view of the PBX: every extension with its state and current calls (partner,
+duration, trunk), queues with waiting callers and members, trunks with their calls,
+parking slots and conference rooms. It runs inside the `cdrj-ami` container on the **same
+AMI connection and user** as the codec capture, so it needs the `ami` block above. See
+[USER-GUIDE.md → Operator panel](USER-GUIDE.md#operator-panel).
+
+```yaml
+panel:
+  enabled: true
+  # meta_refresh_s: 300
+```
+
+| Key | Meaning |
+|-----|---------|
+| `enabled` | Turns the panel on. Active only with a configured `ami` block and a valid license. |
+| `meta_refresh_s` | How often the names of extensions, queues, conference rooms and parking lots are read from the FreePBX database. Default `300` (60–86400). |
+
+**Extend the AMI user** — *Settings → Asterisk Manager Users → astcdr*:
+- **Read:** add `agent` (queue events) and `system` (registration events) — so: `call`,
+  `reporting`, `agent`, `system`. Read rights only deliver events; they change nothing.
+- **Write:** unchanged (`reporting`). The panel currently only **shows**; controlling calls
+  (dialling, transferring, …) will need more write rights and will be documented with it.
+  The AMI user never needs `system` or `command` for writing.
+- *Submit* and *Apply Config*, then `docker compose up -d --force-recreate`.
+
+**Names (optional, recommended).** Queue, conference-room and parking-lot names, and the
+names of extensions without a phone (e.g. a voicemail box), come from the FreePBX database.
+Re-run `sudo ./setup-db-user.sh` — it now also grants read access to exactly these columns
+(never to the password or PIN columns of the same tables). Without it the panel shows
+numbers instead of those names; extensions with a phone still get their name from Asterisk.
+
+**Who sees what** is set per role (right *Open panel* and the visibility fields), see
+[USER-GUIDE.md → Users & roles](USER-GUIDE.md#users--roles).
+
 ---
 
 ## `ui` — appearance & behavior

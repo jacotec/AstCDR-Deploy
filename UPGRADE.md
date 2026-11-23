@@ -27,6 +27,11 @@ the update, and nobody gains or loses access:
   through a role if needed.
 - New tables (roles, extensions, audit log) are created on start. Like users, they survive
   a cache rebuild.
+- **Operator panel** (licensed version, optional): add `panel: enabled: true` to
+  `config.yaml`, give the AMI user the read rights `agent` and `system`, and re-run
+  `sudo ./setup-db-user.sh` for the names — details in
+  [CONFIGURATION.md → panel](CONFIGURATION.md#panel--operator-panel-optional-licensed-version).
+  Then give the right *Open panel* to the roles that should see it.
 
 ### ⚠️ One-time: the containers now use host networking
 
