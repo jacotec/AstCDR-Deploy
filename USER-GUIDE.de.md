@@ -491,8 +491,9 @@ Rechtenamen in *kursiv* beziehen sich auf die [Rechtetabelle](#rechte).
   Codec-Erfassung ihn gemessen hat — den **Codec** der Leitung und der Gegenstelle, mit
   Hinweis, wenn Asterisk transkodiert. Abzeichen im Kachelkopf markieren **DND** (Nicht
   stören), **FM** (Follow-Me), einen **Dreier** am Telefon, ein **Auge** (jemand hört mit —
-  nur sichtbar für Benutzer, die selbst mithören dürfen), den Umschlag **✉** (Voicemail) und
-  einen roten **●** (es gibt Aufnahmen).
+  nur sichtbar für Benutzer, die selbst mithören dürfen), eine kleine **Kaffeetasse** (die
+  Nebenstelle ist in mindestens einer Queue pausiert — der Tooltip zeigt, in welchen und
+  warum), den Umschlag **✉** (Voicemail) und einen roten **●** (es gibt Aufnahmen).
 - **Dein Arbeitsplatz** — die Nebenstelle, an der du sitzt — steht als doppelt breite
   Kachel vorn (Pin-Symbol). Hast du mehr als eine eigene Nebenstelle (zugewiesen unter
   [Benutzer & Rollen](#benutzer--rollen)), wählst du sie unter **Ich sitze an** links in der

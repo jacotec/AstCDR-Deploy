@@ -468,8 +468,9 @@ Right names in *italics* refer to the [rights table](#rights).
   through one, and — once the codec capture has sampled it — the **codec** of the line and
   of the far end, with a note when Asterisk transcodes. Badges in the tile header mark
   **DND**, **FM** (follow-me), a **3-way** call on the phone, an **eye** (someone is
-  listening in — only visible to users who may listen in themselves), the envelope **✉**
-  (voicemail) and a red **●** (recordings exist).
+  listening in — only visible to users who may listen in themselves), a small **coffee
+  cup** (the extension is paused in at least one queue — hover for which queues and why),
+  the envelope **✉** (voicemail) and a red **●** (recordings exist).
 - **Your workplace** — the extension you are sitting at — comes first as a double-width
   tile (pin symbol). With more than one own extension (assigned under
   [Users & roles](#users--roles)) choose it under **I'm at** at the left of the toolbar;
