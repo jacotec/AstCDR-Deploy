@@ -505,7 +505,8 @@ Rechtenamen in *kursiv* beziehen sich auf die [Rechtetabelle](#rechte).
 
 - **Kurzwahlen** — wichtige Nummern, die dein Admin angelegt hat (externe oder interne
   Funktionen wie eine Ansage) — folgen den Nebenstellen als Kacheln mit einem **Stern**,
-  genauso sortiert. Blau = frei; solange ein Gespräch mit der Nummer läuft, wird die Kachel
+  genauso sortiert — nur bei Sortierung nach **Nummer** kommen die externen zuletzt, nach
+  Name sortiert. Blau = frei; solange ein Gespräch mit der Nummer läuft, wird die Kachel
   gelb (klingelt) oder rot (Gespräch) und zeigt, welche Nebenstelle es führt — eine externe
   Nummer wird in jeder Schreibweise erkannt (`0221 …` = `+49 221 …`). Ob eine Nummer intern
   ist, wird im Dialplan der Anlage nachgeschlagen (Nebenstellen, Hints und eigener Dialplan

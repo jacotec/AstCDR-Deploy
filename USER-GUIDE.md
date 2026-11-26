@@ -482,7 +482,8 @@ Right names in *italics* refer to the [rights table](#rights).
 
 - **Speed dials** — important numbers your admin set up (external ones, or internal
   functions such as an announcement) — follow the extensions as tiles with a **star**, sorted
-  the same way. Blue = idle; while a call with that number is active the tile turns amber
+  the same way — except that with sorting by **number** the external ones come last,
+  sorted by name. Blue = idle; while a call with that number is active the tile turns amber
   (ringing) or red (talking) and shows which extension has it — an external number is
   recognised in any spelling (`0221 …` = `+49 221 …`). Whether a number is internal is
   looked up in the PBX's dialplan (extensions, hints and custom dialplan such as a
