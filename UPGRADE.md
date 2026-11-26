@@ -4,9 +4,17 @@
 
 ```bash
 cd /opt/astcdr
+git pull                   # fetch the new startup files (compose, scripts, docs)
 docker compose pull        # fetch the newest image
 docker compose up -d       # recreate containers with it
 ```
+
+`git pull` updates the files next to the compose file — `docker-compose.yml`,
+`setup-db-user.sh`, `reset-cache.sh`, the examples and the docs. Your own `config.yaml`,
+`costs.yaml`, `.env` and `license/` are not touched. **Don't skip it:** a new release can
+need a new compose file or new database grants, and the image alone doesn't bring them.
+(Installed from the tarball instead of `git clone`? Unpack the new tarball and copy those
+files over yours.)
 
 The compose file uses the `:latest` tag by default, so `pull` fetches the newest
 release. Your data (cache, users, settings) is preserved across updates.
@@ -17,10 +25,10 @@ Version 2.0 brings roles and rights, the **operator panel**, voicemail, call rec
 phone books. The journal keeps working as before; the update itself is the usual `pull` and
 `up -d`. A few one-time steps unlock the new parts:
 
-1. **Take the new `docker-compose.yml`** from the bundle (it replaces yours). It mounts the
-   FreePBX voicemail and recordings directories read-only into `cdrj-web` and contains the
-   `cdrj-ami` container for the panel. If you changed your compose file, carry those
-   changes over. Then `docker compose up -d --force-recreate`.
+1. **Take the new `docker-compose.yml`** — `git pull`, or from the bundle (it replaces
+   yours). It mounts the FreePBX voicemail and recordings directories read-only into
+   `cdrj-web` and contains the `cdrj-ami` container for the panel. If you changed your
+   compose file, carry those changes over. Then `docker compose up -d --force-recreate`.
 2. **Re-run `sudo ./setup-db-user.sh`** on the PBX and answer **Y** to keep the existing
    password — it only adds the new column grants (names of queues, conference rooms and
    parking lots, PIN flags of conference rooms, Contact Manager) and leaves `.env` alone.
