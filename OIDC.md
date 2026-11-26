@@ -2,7 +2,7 @@
 
 AstCDR supports generic OpenID Connect. It is verified with **Nextcloud**,
 **Authentik** and **Keycloak**, but any standards-compliant provider works. You
-can run OIDC alongside the local break-glass admin (`auth.mode: both`) — keep at
+can run OIDC alongside local accounts (`auth.mode: both`) — keep at
 least one local admin as a fallback.
 
 ## How it fits together
@@ -17,8 +17,8 @@ least one local admin as a fallback.
 3. You put the client details into `config.yaml` (`auth.oidc`) and the secret into
    `.env` (`OIDC_CLIENT_SECRET`).
 4. **Who may sign in** is decided in the IdP (by assigning the app to users/groups),
-   **not** in AstCDR. AstCDR only decides who becomes an **admin** (via
-   `admin_groups`).
+   **not** in AstCDR. AstCDR decides what a user may do: superadmins via
+   `admin_groups`, everyone else through roles assigned to OIDC groups in the app.
 
 ## Configuration block
 
@@ -76,6 +76,12 @@ when addresses are assigned administratively.
 accounts and settings), then switch it off again. New users are unaffected either way —
 they have no existing account to link to.
 
+**From local users to OIDC:** a local user created in the app (*Admin → Users*) who signs
+in via OIDC with the **same email** is switched to OIDC: the account keeps its settings,
+extensions and history, the local password is dropped (other local sessions end), and the
+roles come from the IdP groups from then on. Emergency accounts from `config.yaml` keep
+their password — they only share settings with the OIDC login.
+
 ## Discovery URL (`server_metadata_url`)
 
 - **Authentik / Keycloak:** leave `server_metadata_url` empty. AstCDR appends
@@ -122,9 +128,10 @@ they have no existing account to link to.
 - **Redirect/callback mismatch:** the IdP's allowed redirect URI must be exactly
   `{base_url}/auth/callback`, and `base_url` must match what the reverse proxy
   serves (scheme + host).
-- **No admin rights:** check that `groups` is in `scopes`, the `groups_claim`
-  matches your IdP's claim name, and the user is in one of `admin_groups`. The
-  role is applied on **(re-)login** — sign out and back in after group changes.
+- **No admin rights / wrong role:** check that `groups` is in `scopes`, the
+  `groups_claim` matches your IdP's claim name, and the user is in one of `admin_groups`
+  (or in the group a role is assigned to). Roles are applied on **(re-)login** — sign out
+  and back in after group changes.
 - **See what the IdP actually sent:** `docker compose logs cdrj-web | grep OIDC-Login`
   prints the received claim keys, the group value and the resulting role — the
   fastest way to see why a mapping didn't take.

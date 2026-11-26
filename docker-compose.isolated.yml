@@ -56,6 +56,11 @@ services:
       - ./costs.yaml:/app/costs.yaml:ro    # tariffs (must exist; empty file = no costs)
       # License: drop an astcdr.lic into the ./license folder -> full version.
       - ./license:/app/license:ro
+      # FreePBX voicemail (operator panel): only possible when AstCDR runs on the PBX
+      # itself. Then uncomment (read-only; delete/move go through AMI):
+      # - ${VOICEMAIL_DIR:-/var/spool/asterisk/voicemail}:/var/spool/asterisk/voicemail:ro
+      # Same for call recordings (read-only; RECORDINGS_MOUNT=rw + group_add to allow deleting):
+      # - ${RECORDINGS_DIR:-/var/spool/asterisk/monitor}:/var/spool/asterisk/monitor:${RECORDINGS_MOUNT:-ro}
     depends_on:
       cdrj-postgres:
         condition: service_healthy

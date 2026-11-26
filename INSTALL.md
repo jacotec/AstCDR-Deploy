@@ -40,8 +40,9 @@ sudo ./setup-db-user.sh
 
 The script prompts for a password (or generates a safe one), creates the
 `cdrjournal_ro` user **idempotently** (safe to re-run, survives FreePBX updates),
-grants `SELECT` on the `cdr` and `cel` tables only, and offers to write
-`SOURCE_DB_PASSWORD` into your `.env`.
+grants `SELECT` on the `cdr` and `cel` tables — plus single columns for the names of
+extensions, queues, conference rooms and parking lots and for the Contact Manager, never
+password columns — and offers to write `SOURCE_DB_PASSWORD` into your `.env`.
 
 <details><summary>Manual alternative (SQL)</summary>
 
@@ -63,12 +64,13 @@ Edit `.env`:
 | Variable | Meaning |
 |----------|---------|
 | `WEB_PORT` | Host port for the web UI (default `3000`). Your reverse proxy talks to this. |
+| `FORWARDED_ALLOW_IPS` | Optional: IP (or network) of your reverse proxy, e.g. `10.32.0.1`. Then logs and the audit log show the real client address (`X-Forwarded-For`) instead of the proxy's. Default `127.0.0.1`. List only your proxy — whoever is trusted here can claim any address. |
 | `APP_SECRET_KEY` | Session signature. Generate: `openssl rand -hex 32`. |
 | `CACHE_DB_PASSWORD` | Password for the bundled Postgres cache (choose any). |
 | `SOURCE_DB_PASSWORD` | Password of `cdrjournal_ro` (already set if the script wrote it). |
 | `OIDC_CLIENT_SECRET` | Only if you use OIDC login — see [OIDC.md](OIDC.md). |
 
-> **Never** put the break-glass admin's bcrypt hash into `.env` — bcrypt hashes
+> **Never** put the emergency account's bcrypt hash into `.env` — bcrypt hashes
 > contain `$`, which Docker Compose interprets as variables and corrupts. It goes
 > **raw into `config.yaml`** (next step).
 
@@ -81,12 +83,13 @@ The minimum you must set (full reference: **[CONFIGURATION.md](CONFIGURATION.md)
 - **`source_db`** — how to reach the FreePBX DB: either uncomment `socket:` (same
   host) or set `host:`/`port:`.
 - **`auth`** — at least one login method. The simplest start is a local
-  break-glass admin:
+  emergency account (a superadmin):
   ```bash
   docker compose run --rm cdrj-web python -m app.auth.local "MY-PASSWORD"
   ```
   Put the printed bcrypt hash **raw** into `config.yaml` under
-  `auth.local.users[].password_hash`.
+  `auth.local.superadmin[].password_hash`. Further local users are created later in the
+  app (*Admin → Users*).
 - **`trunks.known` / `trunks.labels`** — your trunk names, so the trunk column
   shows friendly labels.
 
@@ -127,7 +130,16 @@ usable quickly and the rest streams in). Open your `base_url` and log in.
 - **Local admin:** the username/password from step 4.
 - **OIDC:** click the login button — see [OIDC.md](OIDC.md) for the IdP setup.
 
-## Optional: codec & media capture (licensed version)
+## Optional: operator panel, phone books, codec capture (licensed version)
+
+- **Operator panel:** create an AMI user, enable the `ami` and `panel` blocks — see
+  **[CONFIGURATION.md → `panel`](CONFIGURATION.md#panel--operator-panel-optional-licensed-version)**.
+  Then give the right *Open panel* (and the operating rights) to the roles that should use
+  it, and assign users their extensions under *Admin → Users*.
+- **Phone books:** set up under *Admin → Phone books* — see
+  [CONFIGURATION.md → Phone books](CONFIGURATION.md#phone-books-licensed-version).
+
+### Codec & media capture
 
 Want to see which codec each call used, whether Asterisk transcoded, and whether media
 and signaling were encrypted? Create an AMI user in FreePBX, put its password into
@@ -139,7 +151,8 @@ ignored.
 
 ## Next steps
 
-- **[USER-GUIDE.md](USER-GUIDE.md)** — how to use filters, columns, sorting, search.
+- **[USER-GUIDE.md](USER-GUIDE.md)** — how to use AstCDR (German:
+  [USER-GUIDE.de.md](USER-GUIDE.de.md)).
 - **[LICENSE.md](LICENSE.md)** — remove the free-version limits.
 - **[UPGRADE.md](UPGRADE.md)** — keeping AstCDR up to date.
 - Problems? **[TROUBLESHOOTING.md](TROUBLESHOOTING.md)**.

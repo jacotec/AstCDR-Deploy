@@ -6,7 +6,7 @@ Common problems and how to fix them. Check container logs first:
 docker compose ps
 docker compose logs -f cdrj-ingest      # data import
 docker compose logs -f cdrj-web         # web app / login
-docker compose logs -f cdrj-ami         # codec capture (only if enabled)
+docker compose logs -f cdrj-ami         # codec capture & operator panel (only if enabled)
 ```
 
 ---
@@ -193,6 +193,13 @@ addresses that should always get them.
 
 ## Can't log in as the local admin
 
+- The start stops with *the key "users" was renamed to "superadmin"* (or *remove
+  "enabled"*): since 2.0 the emergency accounts are under `auth.local.superadmin`, without
+  `role`; whether local login is offered is set by `auth.mode` — see
+  [UPGRADE.md](UPGRADE.md#upgrading-from-1x-to-20).
+- `auth.mode: "oidc"` hides the local login entirely — set `"both"` (or `"local"`).
+- *Too many failed attempts — please try again in … s*: a brake after 5 failed sign-ins;
+  wait the time shown.
 - The **bcrypt hash** must be in `config.yaml` (raw, in quotes), **not** in `.env`.
   Regenerate and paste it raw:
   ```bash
@@ -200,6 +207,17 @@ addresses that should always get them.
   ```
 - You can log in with the **username or the email** from the config.
 - After editing `config.yaml`, apply it: `docker compose up -d`.
+
+## "Forgot password?" is missing or no mail arrives
+
+- The link only appears with local login on (`auth.mode` `local`/`both`), email set up
+  (`email:` section) **and** at least one role with the right *Forgot password*.
+- A mail is only sent for a **local user from the app** with an **email address** whose
+  roles have the right *Forgot password* — never for emergency accounts. The page answers
+  the same either way (so it does not reveal accounts); the audit log shows *Password reset
+  requested* with "mail sent" or "not sent".
+- At most one mail per account every five minutes; the link is valid for one hour and
+  points to `app.base_url`.
 
 ## Login works but the session immediately drops
 
@@ -211,14 +229,101 @@ Usually a cookie/TLS mismatch.
 - Make sure your reverse proxy forwards the original scheme/host (the app runs with
   `--proxy-headers`).
 
+## The audit log shows the proxy's IP instead of the user's
+
+The web server only believes `X-Forwarded-For` from proxies it trusts — by default only
+`127.0.0.1`. If your reverse proxy runs on another host, add its address to `.env`, e.g.
+`FORWARDED_ALLOW_IPS=10.32.0.1` (comma list, networks allowed), and restart the stack
+(`docker compose up -d --force-recreate`). Only list your proxy: a trusted address can
+claim any client IP.
+
+## Operator panel: the *Panel* tab is missing or the panel stays empty
+
+- **Tab missing:** the user's role needs the right *Open panel*, and the instance a valid
+  license ([LICENSE.md](LICENSE.md)).
+- **Panel empty / "No connection to the PBX":** the panel runs in `cdrj-ami`. Check that
+  `config.yaml` has a complete `ami` block **and** `panel: enabled: true`, that `cdrj-ami`
+  is running, and look at `docker compose logs -f cdrj-ami` (login refused? wrong
+  password? AMI *Permit* not covering the container's address?).
+- **A user sees no extensions or no desk:** extensions are assigned to users under
+  *Admin → Users*; what else a role may see is set in the role (visibility fields).
+- **Queue or registration states don't update:** the AMI user lacks the **read** rights
+  `agent` and `system` (see CONFIGURATION.md → panel).
+
+## Operator panel: actions fail ("Asterisk refused: …")
+
+The panel shows everything with read rights alone, but every action needs **write** rights
+of the AMI user. Admins with the right *Settings* see a yellow note at the top of the panel
+naming the missing write class and the functions it affects. Add it under *Settings →
+Asterisk Manager Users* in FreePBX, *Apply Config*, then
+`docker compose up -d --force-recreate`. The list of classes and what each is needed for is
+in [CONFIGURATION.md → panel](CONFIGURATION.md#panel--operator-panel-optional-licensed-version).
+
+## Dialing from the panel: my phone rings instead of picking up by itself
+
+Auto-answer depends on the phone. Under *Admin → Extensions* choose the header template for
+your phone vendor and switch auto-answer on for that extension. Phones that ignore the
+header simply ring — pick up yourself; then switch auto-answer off for that extension. With
+**all devices** selected next to *I'm at*, every device rings and none answers by itself.
+
+## Phone control: "Answer" / "Hold" does nothing
+
+- **Yealink:** the phone confirms the command but does nothing → set
+  `features.show_action_uri_option = 0` on the phone (only possible through a configuration
+  file or your provisioning template, not in the web interface) — see
+  [CONFIGURATION.md → Phone control](CONFIGURATION.md#phone-control-answer-and-hold-from-the-panel-licensed-version).
+  Also check that *Action URI* is enabled (`features.action_uri.enable = 1`) and that the
+  AMI user has write `system` (needed for `PJSIPNotify`).
+- **Auerswald:** *Phone not reachable* — `cdrj-ami` cannot reach the phone's address (it
+  connects **to** the phone; LAN or VPN needed). *The phone rejected the credentials* —
+  check the token (COMfortel D) or the web login (COMfortel 1400/2600/3600 IP).
+- **"No phone control is set up for this phone":** set it up under *Admin → Extensions*
+  (phone button). With several devices on one extension choose the device next to
+  *I'm at*.
+
+## Voicemail: "The voicemail storage is not reachable"
+
+The panel reads the messages from the FreePBX voicemail directory, mounted read-only into
+`cdrj-web`. Check that your `docker-compose.yml` has the line
+`- ${VOICEMAIL_DIR:-/var/spool/asterisk/voicemail}:/var/spool/asterisk/voicemail:ro`
+under `cdrj-web` → `volumes` (an older compose file lacks it — take the new one from the
+bundle), then `docker compose up -d --force-recreate`. If your PBX keeps voicemail
+elsewhere, set `VOICEMAIL_DIR` in `.env`. With the isolated compose (AstCDR on another
+host) voicemail is not available. Marking as heard, deleting and forwarding additionally
+need the AMI write right `user` (see CONFIGURATION.md → panel).
+
+## Recordings: "Deleting is not enabled" or "File is missing"
+
+*Deleting is not enabled* means the recordings directory is mounted read-only (the
+default). Set `RECORDINGS_MOUNT=rw` in `.env`, check `ASTERISK_GID` (`getent group
+asterisk`), then `docker compose up -d --force-recreate`.
+
+*The folder of this recording is not writable* although `RECORDINGS_MOUNT=rw` is set:
+Asterisk creates each new day folder (`YYYY/MM/DD`) with mode `755` — only the owner
+`asterisk` may write there, not the group. (`fwconsole chown` later sets `775`, which is why
+older folders work.) Fix it once on the PBX with a default ACL, so every new folder inherits
+group write access:
+
+```bash
+command -v setfacl || apt install -y acl
+setfacl -R -m g:asterisk:rwX /var/spool/asterisk/monitor
+setfacl -R -d -m g:asterisk:rwX /var/spool/asterisk/monitor
+```
+
+Check: `docker compose exec cdrj-web sh -c 'd=/var/spool/asterisk/monitor/$(date +%Y/%m/%d); touch $d/.t && rm $d/.t && echo OK'`. *File is missing* means the CDR
+names a recording that is not (or no longer) in `/var/spool/asterisk/monitor/YYYY/MM/DD/`
+— e.g. removed by FreePBX's own cleanup. Starting a recording from the panel is refused by
+Asterisk ("Permission denied") until the AMI user has write `system`.
+
 ## OIDC login fails
 
 - **Redirect/callback mismatch:** the IdP must allow exactly
   `{base_url}/auth/callback`, and `base_url` must match what the proxy serves.
 - **Discovery fails:** open the discovery URL in a browser — it must return JSON.
   **Nextcloud** needs `server_metadata_url` set explicitly.
-- **User has no admin rights:** include `groups` in `scopes`, check `groups_claim`,
-  and put the user in one of `admin_groups`.
+- **User has no admin rights / the wrong role:** include `groups` in `scopes`, check
+  `groups_claim`, and put the user in one of `admin_groups` (superadmin) or in a group a
+  role is assigned to. Roles are applied at the next login.
 - Details and per-provider notes: [OIDC.md](OIDC.md).
 
 ## Footer still says "Unregistered Version" after adding a license
@@ -226,8 +331,12 @@ Usually a cookie/TLS mismatch.
 - The file must be named **`astcdr.lic`** and sit in the **`license/`** folder next
   to `docker-compose.yml` (i.e. `/opt/astcdr/license/astcdr.lic`).
 - Pickup is automatic within a few seconds; if in doubt `docker compose up -d`.
-- Make sure the license major version matches the app's major version (a `1`
-  license covers `1.x`).
+- Footer says *License for Main Version N.x — not valid for M.x*: an older license without
+  an update period only covers its major version (a `2` license covers `2.x`); you need a
+  new license for this release.
+- Footer says *updates until &lt;date&gt; — this build is from &lt;date&gt;*: your license
+  covers updates up to that date, and this release is newer. Nothing is deleted; get a
+  new license or pin the previous release (see [LICENSE.md](LICENSE.md#scope-of-a-license)).
 - See [LICENSE.md](LICENSE.md).
 
 ## Wrong times / dates

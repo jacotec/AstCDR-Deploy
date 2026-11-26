@@ -1,8 +1,10 @@
 # AstCDR — Deploy Bundle
 
-A ready-built, containerized **call journal for FreePBX 17 / Asterisk 22** —
-including the **trunk column** that commercial CTI solutions leave empty. Call legs
-are folded per `linkedid` into one logical row, so you read calls, not fragments.
+A ready-built, containerized **call journal and operator panel for FreePBX 17 /
+Asterisk 22** — including the **trunk column** that many commercial CTI solutions leave empty.
+Call legs are folded per `linkedid` into one logical row, so you read calls, not
+fragments. The **operator panel** shows the whole PBX live and lets you dial, transfer,
+park and pick up calls from the browser.
 
 This repo contains **only the startup files** (no sources). The container images
 are pulled from the public registry `ghcr.io/jacotec/astcdr` automatically
@@ -25,6 +27,28 @@ on start.
   **conference**, **voicemail**, **transfers** — including the **consultation** while
   the caller sits on hold.
 - Ring and talk time per step, so the numbers add up.
+
+**Operator panel** (optional, licensed version)
+- Every extension live as a tile: state, current calls with partner, duration and trunk —
+  plus queues with waiting callers and agents, trunks, parking slots and conference rooms.
+- **Operate calls from the browser:** dial from your desk, hang up, transfer, consult,
+  park and unpark, pick up, pull a call to your phone — by button, menu or **drag & drop**.
+- **Answer and hold** on your own phone (Yealink, Auerswald), reject a ringing call as
+  *busy*.
+- **Speed dials:** tiles for important numbers — internal ones (a feature code, a
+  `Custom:` hint such as a door opener or a spam button) show their live state, external
+  ones light up while a call with that number is active. Global ones set by the admin,
+  personal ones per user, optionally dialed with a single click.
+- **Conference rooms:** join as leader, pull a caller into a room, mute, lock, end.
+- **Queues:** pause with a reason, log agents in and out. **Do-not-disturb** and
+  **Follow-Me** with a click. **Listen in, whisper, barge in** — each a right of its own.
+- **Voicemail** (listen, mark, forward, delete) and **call recordings** (play, download,
+  delete, start and stop) — in the panel and in the journal.
+- **Phone books:** LDAP, CardDAV, the FreePBX Contact Manager and a personal CardDAV book
+  per user — names in the journal and the panel, number suggestions while dialing, and
+  caller names on the phones via CallerID Superfecta.
+- **Who may do what** is set per role, down to single functions and the extensions a user
+  may see; every action lands in the audit log.
 
 **Codecs & media** (optional, licensed version)
 - Per call: the **codec** of every leg, a **⚠ transcoding** marker, **HD** voice, whether
@@ -63,8 +87,12 @@ on start.
   server-side and takes your current filter with it.
 
 **Login & users**
-- **OIDC** single sign-on (Nextcloud, Authentik, Keycloak) plus a local break-glass
-  admin, with admin/user roles.
+- **OIDC** single sign-on (Nextcloud, Authentik, Keycloak), **local users** managed in
+  the app (roles to tick, password rules, password change, optional *Forgot password*)
+  and emergency accounts in the configuration.
+- **Roles and rights:** roles of your own, assigned by OIDC group, with fine-grained rights
+  (journal scope, costs, export, panel functions, voicemail, recordings, phone books,
+  administration) and an **audit log** of every action.
 - Theme, language, columns and saved filters live **per user on the server** — same
   view on every device.
 
@@ -79,8 +107,12 @@ on start.
 
 **How it reads your PBX**
 - **Strictly read-only** on the FreePBX database (`SELECT` only, through its own
-  read-only user) — and on the optional AMI connection (`Getvar` only, no call control). Everything is folded into a separate Postgres cache; rebuilding that
-  cache never touches your PBX data and keeps users and settings.
+  read-only user — on the `cdr` and `cel` tables plus single name columns, never on
+  passwords). Everything is folded into a separate Postgres cache; rebuilding that cache
+  never touches your PBX data and keeps users and settings.
+- The optional **AMI** connection only **reads** for the codec capture. The operator panel
+  operates calls through it — but only with the write rights you grant the AMI user, and
+  only what each user's role allows.
 
 ## Demo
 
@@ -89,39 +121,33 @@ A live demo is available at **[astcdr.jacotec.de](https://astcdr.jacotec.de)**:
 - **Username:** `demo`
 - **Password:** `demo`
 
+The operator panel in the demo plays a short scripted scenario on a loop — calls ring,
+get answered, held, transferred and hung up, a queue caller is served, a voicemail comes
+in, a guest joins the conference room. Buttons and menus can be explored, but actions are
+not carried out.
+
 ## Disclaimer
 
-I built this project purely for my own needs, with exactly the features I want
-from a CDR app for my own FreePBX boxes. But if you happen to share my taste,
-you're more than welcome to use it too. So here's the deal:
+This project is **donationware**. The licensed version is yours for a donation of
+**€50 or more**. The license never expires — the version you run keeps working forever.
+**Updates are included for one year**, and every additional **€25** adds another year.
+Without a license, AstCDR shows the last 30 days and the 100 most recent calls; the
+operator panel, voicemail, call recordings, phone books and the codec capture are part of
+the licensed version.
 
-When the project is done, it's done — unless I decide I feel like building
-something else onto it. If it breaks five years from now because Asterisk changed
-something crucial and I've long since wandered off to a different PBX and don't
-need it anymore, then it's broken. This is a "I've got a little time on the couch
-right now" kind of thing. You're very welcome to report bugs in the Issues;
-feature requests I'll probably ignore.
+**Why donationware?** I built AstCDR as a private hobby project for my own FreePBX boxes,
+to my own requirements — because I wanted a decent call journal and wasn't entirely happy
+with FOP2. And I don't want to spend a lot of my private money on commercial alternatives
+for my slightly crazy PBX hobby.
 
-Why isn't it fully open source? Because between the job, the family, and the
-thousand things that always need doing, I simply have zero time for it. I'd have
-to maintain it, review PRs, discuss proposals. And it's really not my style to
-toss a repo out into the world and go, "someone please take care of this — but
-don't mess it up for me." When I do have a bit of time for the community, I test a
-ton and file issues or feature requests on other exciting projects — but I get to
-do that whenever I feel like it and actually have the time. And if that's not the
-case for half a year, then it just isn't.
-
-So, in the spirit of honesty: if you're happy to play with it under these terms —
-wonderful. The last 30 days and the last 100 calls work with no restrictions; the
-optional codec & media capture is part of the licensed version.
-
-For every donation of €25 or more, I'll gladly issue a license file that removes
-these limits. For details, see [LICENSE.md](LICENSE.md).
+I have a family and a job that takes a lot of time and puts food on the table. So I
+couldn't look after this properly — neither commercially nor as the maintainer of an
+open-source project. It is, and is meant to stay, a hobby project — with no obligations
+whatsoever.
 
 <a href="https://buymeacoffee.com/jacotec" target="_blank"><img src="https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png" alt="Buy me a coffee" height="48"></a>
 
-And if you think all of this is lame — I completely understand. In that case, I
-can only point you toward another project or a commercial module.
+More details: [LICENSE.md](LICENSE.md).
 
 ## Quick start
 
@@ -146,14 +172,15 @@ Then open your `base_url` in a browser and log in. Full details: **[INSTALL.md](
 | **[OIDC.md](OIDC.md)** | Single sign-on with Nextcloud, Authentik or Keycloak |
 | **[LICENSE.md](LICENSE.md)** | Free vs. licensed limits, activating a license |
 | **[UPGRADE.md](UPGRADE.md)** | Updating to a new version, when to rebuild the cache |
-| **[USER-GUIDE.md](USER-GUIDE.md)** | Using the journal: filters, columns, sorting, search, call details |
+| **[USER-GUIDE.md](USER-GUIDE.md)** | Using AstCDR: journal, filters, call details, statistics, costs, operator panel, voicemail, recordings, phone books, users & roles |
+| **[USER-GUIDE.de.md](USER-GUIDE.de.md)** | The user guide in German (Benutzerhandbuch) |
 | **[TROUBLESHOOTING.md](TROUBLESHOOTING.md)** | Common problems and fixes |
 
 ## Contents of this bundle
 
 | File | Purpose |
 |------|---------|
-| `docker-compose.yml` | The containers (web, ingest, postgres, optional codec capture), prebuilt images, host networking |
+| `docker-compose.yml` | The containers (web, ingest, postgres, optional AMI container for codec capture and operator panel), prebuilt images, host networking |
 | `docker-compose.isolated.yml` | Optional alternative: classic bridge network — only if AstCDR runs on a *different* host than the PBX ([CONFIGURATION.md](CONFIGURATION.md)) |
 | `.env.example` | Secrets & ports — copy to `.env` and fill in |
 | `config.example.yaml` | Instance configuration — copy to `config.yaml` |
@@ -164,7 +191,14 @@ Then open your `base_url` in a browser and log in. Full details: **[INSTALL.md](
 ## Requirements
 
 - Docker + Docker Compose, Linux x86-64.
-- Access to the FreePBX MariaDB (local socket or LAN).
+- Access to the FreePBX MariaDB (local socket or LAN) through a read-only user —
+  `setup-db-user.sh` creates it.
+- For the codec & media details and the operator panel (licensed version, optional): an
+  **AMI user** (*Settings → Asterisk Manager Users* in FreePBX). For the codec details it
+  only reads (write right `reporting`, nothing that touches calls); the panel needs further
+  write rights to operate calls — see
+  [CONFIGURATION.md → `ami`](CONFIGURATION.md#ami--codec--media-capture-optional) and
+  [→ `panel`](CONFIGURATION.md#panel--operator-panel-optional-licensed-version).
 - A reverse proxy with TLS in front (recommended).
 
 ## Screenshots

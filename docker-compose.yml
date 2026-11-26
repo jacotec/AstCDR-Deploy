@@ -64,6 +64,16 @@ services:
       # License: drop an astcdr.lic into the ./license folder -> full version.
       # Empty folder = free version. The compose file never needs to change.
       - ./license:/app/license:ro
+      # FreePBX voicemail (operator panel, licensed version): READ-ONLY. Listing and
+      # playback read the files; delete/move go through AMI, never through this mount.
+      # Different path: set VOICEMAIL_DIR in .env.
+      - ${VOICEMAIL_DIR:-/var/spool/asterisk/voicemail}:/var/spool/asterisk/voicemail:ro
+      # Call recordings (journal + panel, licensed version): READ-ONLY by default. To allow
+      # deleting from AstCDR set RECORDINGS_MOUNT=rw in .env — the container may then remove
+      # files through the `asterisk` group (ASTERISK_GID, usually 995 on FreePBX), never root.
+      - ${RECORDINGS_DIR:-/var/spool/asterisk/monitor}:/var/spool/asterisk/monitor:${RECORDINGS_MOUNT:-ro}
+    group_add:
+      - "${ASTERISK_GID:-995}"
     depends_on:
       cdrj-postgres:
         condition: service_healthy

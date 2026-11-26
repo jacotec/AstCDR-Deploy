@@ -11,7 +11,45 @@ docker compose up -d       # recreate containers with it
 The compose file uses the `:latest` tag by default, so `pull` fetches the newest
 release. Your data (cache, users, settings) is preserved across updates.
 
-### Users & roles (version 2.0)
+## Upgrading from 1.x to 2.0
+
+Version 2.0 brings roles and rights, the **operator panel**, voicemail, call recordings and
+phone books. The journal keeps working as before; the update itself is the usual `pull` and
+`up -d`. A few one-time steps unlock the new parts:
+
+1. **Take the new `docker-compose.yml`** from the bundle (it replaces yours). It mounts the
+   FreePBX voicemail and recordings directories read-only into `cdrj-web` and contains the
+   `cdrj-ami` container for the panel. If you changed your compose file, carry those
+   changes over. Then `docker compose up -d --force-recreate`.
+2. **Re-run `sudo ./setup-db-user.sh`** on the PBX and answer **Y** to keep the existing
+   password — it only adds the new column grants (names of queues, conference rooms and
+   parking lots, PIN flags of conference rooms, Contact Manager) and leaves `.env` alone.
+3. **Operator panel** (licensed version, optional): set up the AMI user and add
+   `panel: enabled: true` to `config.yaml` — see
+   [CONFIGURATION.md → `panel`](CONFIGURATION.md#panel--operator-panel-optional-licensed-version).
+   Then give the right *Open panel* (and the operating rights you want) to the roles that
+   should use it, and assign users their extensions under *Admin → Users*.
+4. **Recordings:** AstCDR now keeps **all** recordings of a call. Run
+   `./reset-cache.sh` once so older calls get them too.
+5. **Phone books and phone control** are set up in the app: *Admin → Phone books* and the
+   phone button under *Admin → Extensions* (see CONFIGURATION.md).
+6. **Local login in `config.yaml`** — required, otherwise the start stops with a hint.
+   Under `auth.local`, rename `users:` to `superadmin:`, delete each `role:` line and
+   delete `enabled:`. Entries in `superadmin` are emergency accounts and always
+   superadmins; other local users are now created in the app (*Admin → Users → + New
+   user*). Whether local login is offered is set by `auth.mode` alone. Optionally add
+   `auth.password_policy` (see
+   [CONFIGURATION.md](CONFIGURATION.md#authpassword_policy--passwords-of-local-users)).
+   ```yaml
+   auth:
+     local:
+       superadmin:
+         - username: "admin"
+           email: "admin@example.com"
+           password_hash: "$2b$12$…"
+   ```
+
+### Users & roles
 
 Version 2.0 replaces the fixed *admin/user* split with roles and rights (see
 [USER-GUIDE.md → Users & roles](USER-GUIDE.md#users--roles)). Nothing has to be done for
@@ -19,19 +57,32 @@ the update, and nobody gains or loses access:
 
 - The role **Benutzer** is created automatically with exactly the rights a normal user
   had before, and applies to everyone signed in.
-- Former admins (`auth.oidc.admin_groups`, local `role: admin`) are **superadmins** and
-  may still do everything.
+- Former admins (`auth.oidc.admin_groups`, local `role: admin` — now
+  `auth.local.superadmin`) are **superadmins** and may still do everything.
 - Two things that were tied to the admin role are now rights of their own: **Technical
   details** in the call details (cause number, context, SIP call ID, addresses) and
   **admin warning emails** (right *Settings*). Superadmins have both; give them to others
   through a role if needed.
-- New tables (roles, extensions, audit log) are created on start. Like users, they survive
-  a cache rebuild.
-- **Operator panel** (licensed version, optional): add `panel: enabled: true` to
-  `config.yaml`, give the AMI user the read rights `agent` and `system`, and re-run
-  `sudo ./setup-db-user.sh` for the names — details in
-  [CONFIGURATION.md → panel](CONFIGURATION.md#panel--operator-panel-optional-licensed-version).
-  Then give the right *Open panel* to the roles that should see it.
+- New tables (roles, extensions, audit log, phone books) are created on start. Like users,
+  they survive a cache rebuild.
+- All rights for the new functions (panel, voicemail, recordings, phone books) start
+  **unticked** in every role — nobody sees them until you grant them.
+
+### What else changes
+
+- **Start page:** users with the panel right now land on the panel. The journal moved to
+  `/journal` (the *List* tab); bookmarks of the bare address open the panel for them,
+  links with filters (`/?…`) still open the journal.
+- **Deleting recordings** from AstCDR is off by default (read-only mount); enable it with
+  `RECORDINGS_MOUNT=rw` in `.env` (see CONFIGURATION.md).
+- **AMI write rights:** the codec capture still only needs write `reporting`. The panel
+  needs more to operate calls — exactly which, and what `system` is needed for, is listed in
+  [CONFIGURATION.md → `panel`](CONFIGURATION.md#panel--operator-panel-optional-licensed-version).
+  Without them the panel only shows, and tells admins what is missing.
+
+## Older one-time changes (1.x)
+
+Only relevant if you update an installation older than these changes; a fresh 2.0 install already has them.
 
 ### ⚠️ One-time: the containers now use host networking
 
@@ -113,15 +164,20 @@ new `docker-compose.yml` from the bundle), then `docker compose up -d`:
 Without it the listener never sees your license and the capture stays off (log:
 *Codec capture requires a valid license*).
 
-### Pin a fixed version instead of `:latest`
+## Pin a fixed version instead of `:latest`
 
 To stay on a specific version (and update only deliberately), set in `.env`:
 
 ```bash
-CDRJ_IMAGE=ghcr.io/jacotec/astcdr:1.0.3
+CDRJ_IMAGE=ghcr.io/jacotec/astcdr:2.0.0
 ```
 
 Then `docker compose up -d`. Bump the number when you want to move up.
+
+The same line brings you back to an older release — for example when your license covers
+updates only until a certain date and a newer release says so in the footer (see
+[LICENSE.md](LICENSE.md#scope-of-a-license)). Going back is safe: updates only ever add
+tables and columns, an older release ignores them.
 
 ## When to rebuild the cache
 
@@ -149,9 +205,11 @@ Two ways:
 Worth backing up:
 - **`config.yaml`** and **`.env`** — your configuration and secrets.
 - The **`license/`** folder — your `astcdr.lic`.
-- Optionally the **Postgres volume** — but the call cache can always be rebuilt
-  from the PBX; only **users and their preferences** are not reproducible, so if
-  you back up anything from the DB, that's the part that matters.
+- The **Postgres volume** — the call cache itself can always be rebuilt from the PBX,
+  but some data cannot: **users and their preferences, roles, extension assignments, the
+  audit log, phone-book and phone-control settings, personal phone books** and the
+  **codec data** (captured live, nowhere else stored). A dump covers all of it:
+  `docker compose exec cdrj-postgres pg_dump -U cdrjournal cdrjournal > astcdr.sql`.
 
 ## Restart / logs / status
 

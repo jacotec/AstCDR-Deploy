@@ -7,6 +7,10 @@
 #
 # Prompts for a password (or generates a safe one), creates the user idempotently,
 # and offers to write SOURCE_DB_PASSWORD into .env for you.
+#
+# Running it again after an update is safe: if the user already exists, it asks whether
+# to keep the current password — then it only adds missing grants and leaves the
+# password (and your .env) alone.
 set -euo pipefail
 
 DB_USER="cdrjournal_ro"
@@ -15,7 +19,18 @@ DB_NAME="asteriskcdrdb"
 echo "AstCDR — read-only database user setup"
 echo
 
-# --- 1) Password: type one, or press Enter for a safe random one --------------
+# --- 1) Password: keep the existing one, type one, or generate one -------------
+KEEP=0
+EXISTS="$(mysql -N -e "SELECT COUNT(*) FROM mysql.user WHERE user='$DB_USER' AND host='localhost'" 2>/dev/null || echo 0)"
+if [ "${EXISTS:-0}" != "0" ]; then
+  read -rp "User '$DB_USER' already exists. Keep its current password and only add missing grants? [Y/n] " ANS
+  case "${ANS:-}" in n|N) KEEP=0 ;; *) KEEP=1 ;; esac
+fi
+
+PW=""
+if [ "$KEEP" = "1" ]; then
+  echo "-> keeping the current password (SOURCE_DB_PASSWORD in .env stays valid)."
+else
 read -rsp "Password for '$DB_USER' (Enter = auto-generate, recommended): " PW1; echo
 if [ -z "$PW1" ]; then
   PW="$(openssl rand -hex 24)"
@@ -29,13 +44,20 @@ else
            echo "         An auto-generated password (just press Enter) avoids this." ;;
   esac
 fi
+fi
 
 # --- 2) Create/refresh user + grants (idempotent) -----------------------------
 # Password goes via stdin SQL (not the process list); single quotes are escaped.
+# With KEEP=1 the password statements are left out entirely.
 PW_SQL="${PW//\'/\'\'}"
+if [ "$KEEP" = "1" ]; then
+  PW_STMTS=""
+else
+  PW_STMTS="CREATE USER IF NOT EXISTS '$DB_USER'@'localhost' IDENTIFIED BY '$PW_SQL';
+ALTER USER '$DB_USER'@'localhost' IDENTIFIED BY '$PW_SQL';"
+fi
 if ! mysql <<SQL
-CREATE USER IF NOT EXISTS '$DB_USER'@'localhost' IDENTIFIED BY '$PW_SQL';
-ALTER USER '$DB_USER'@'localhost' IDENTIFIED BY '$PW_SQL';
+$PW_STMTS
 GRANT SELECT ON $DB_NAME.cdr TO '$DB_USER'@'localhost';
 GRANT SELECT ON $DB_NAME.cel TO '$DB_USER'@'localhost';
 FLUSH PRIVILEGES;
@@ -65,12 +87,22 @@ grant_cols() {   # table "col1, col2, …"
 echo "Operator panel: read access to names in the FreePBX database (only these columns):"
 grant_cols users "extension, name"
 grant_cols queues_config "extension, descr"
-grant_cols meetme "exten, description"
+# userpin/adminpin: AstCDR reads only WHETHER a room has a PIN (never the PIN itself)
+grant_cols meetme "exten, description, userpin, adminpin"
 grant_cols parkplus "name, parkext, parkpos, numslots"
+grant_cols userman_users "id, default_extension"
+# Phone books: the FreePBX Contact Manager (only these columns; groups of type "external")
+grant_cols contactmanager_groups "id, type"
+grant_cols contactmanager_group_entries "id, groupid, displayname, fname, lname, company"
+grant_cols contactmanager_entry_numbers "entryid, number, type"
 mysql -e "FLUSH PRIVILEGES" 2>/dev/null || true
 echo
 
 # --- 3) Offer to write it into .env -------------------------------------------
+if [ "$KEEP" = "1" ]; then
+  echo "Done — password unchanged, nothing to change in .env."
+  exit 0
+fi
 ENV_FILE="$(cd "$(dirname "$0")" && pwd)/.env"
 SAFE=0
 case "$PW" in *[!A-Za-z0-9]*) SAFE=0 ;; *) SAFE=1 ;; esac   # only auto-edit safe chars
